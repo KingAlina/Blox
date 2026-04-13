@@ -1,15 +1,3 @@
-<!DOCTYPE html>
-
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Registrierung</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-</head>
-<body>
-
 <?php
 $VornameErr = $NachnameErr = $EmailErr = "";
 $Vorname = $Nachname = $Email = "";
@@ -60,7 +48,46 @@ function inputvalidation($data) {
     $data = htmlspecialchars($data);
     return $data;
 }
+
+require_once('dbaccess.php');
+
+if(isset($_POST["Vorname"]) && !empty($_POST["Vorname"]) && isset($_POST["Nachname"]) && !empty($_POST["Nachname"])
+&& isset($_POST["Email"]) && !empty($_POST["Email"]))
+{
+
+
+$db_obj = new mysqli($host, $user, $password, $database);
+if ($db_obj->connect_error) {
+echo "Connection Error: " . $db_obj->connect_error;
+exit();
+}
+
+$Vorname = $_POST["Vorname"];
+$Nachname = $_POST["Nachname"];
+$Email = $_POST["Email"];
+
+$sql = "INSERT INTO `player` (`Vorname`, `Nachname`, `Email`)
+VALUES (?, ?, ?)";
+$stmt = $db_obj->prepare($sql);
+$stmt-> bind_param("sss", $Vorname, $Nachname, $Email);
+
+if ($stmt->execute()) { echo "Account wurde erfolgreich angelegt"; } else { echo "Registrierung fehlgeschlagen"; }
+$stmt->close(); $db_obj->close();
+}
 ?>
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Registrierung</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+
+
 
 <div class="container">
   <div class="row">
