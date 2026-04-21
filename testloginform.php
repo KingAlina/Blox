@@ -1,86 +1,59 @@
 <?php
-$VornameErr = $NachnameErr = $EmailErr = "";
-$Vorname = $Nachname = $Email = "";
-
-      if (empty($_POST["Vorname"])) 
+ $loginMsg = $Vorname = $VornameErr = $PasswortErr = "";
+if ($_SERVER["REQUEST_METHOD"] == "POST")
+  {   
+    if (empty($_POST["Vorname"])) 
       {
         $VornameErr = "Dies ist ein Pflichtfeld";
       } 
-      else 
+
+    if (empty($_POST["Passwort"])) 
       {
-        $Vorname = inputvalidation($_POST["Vorname"]);
-        if (!preg_match("/^[a-zA-Z-' ]*$/",$Vorname)) 
-        {
-            $VornameErr = "Nur Buchstaben und Abstände erlaubt";
-        }
-      }
-        
-      if (empty($_POST["Nachname"])) 
-      {
-        $NachnameErr = "Dies ist ein Pflichtfeld";
+        $PasswortErr = "Dies ist ein Pflichtfeld";
       } 
-      else 
-      {
-        $Nachname = inputvalidation($_POST["Nachname"]);
-        if (!preg_match("/^[a-zA-Z-' ]*$/",$Nachname)) 
-        {
-            $NachnameErr = "Nur Buchstaben und Abstände erlaubt";
+    require_once('dbaccess.php');
+
+    if(isset($_POST["Vorname"]) && !empty($_POST["Vorname"]) && isset ($_POST["Passwort"]) && !empty($_POST["Passwort"]))
+    {
+        $Vorname = $_POST["Vorname"];
+
+    $db_obj = new mysqli($host, $user, $password, $database);
+    if ($db_obj->connect_error) {
+    echo "Connection Error: " . $db_obj->connect_error;
+    exit();
+    }
+    $sql = "SELECT Passwort FROM player WHERE Vorname = ?";
+    $stmt = $db_obj->prepare($sql);
+    $stmt->bind_param("s", $Vorname);
+    $stmt->execute();
+    
+    $stmt->bind_result($Passwort);
+
+    if ($stmt->fetch()) {
+        if(password_verify($_POST["Passwort"], $Passwort)) {
+        $loginMsg = "Valid password!<br>";
+        } else {
+            $loginMsg =  "Invalid password!<br>";
         }
-      }
+           
+    } else {
+            $loginMsg = "User nicht gefunden!";
+        }
     
-      if (empty($_POST["Email"])) 
-      {
-        $EmailErr = "Dies ist ein Pflichtfeld";
-      } 
-      else 
-      {
-        $Email = inputvalidation($_POST["Email"]);  
-        if (!filter_var($Email, FILTER_VALIDATE_EMAIL))
-        {
-            $EmailErr = "Falsches Emailformat";
-        }        
-      }
-    
-
-function inputvalidation($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
 }
-
-require_once('dbaccess.php');
-
-if(isset($_POST["Vorname"]) && !empty($_POST["Vorname"]) && isset($_POST["Nachname"]) && !empty($_POST["Nachname"])
-&& isset($_POST["Email"]) && !empty($_POST["Email"]))
-{
-
-
-$db_obj = new mysqli($host, $user, $password, $database);
-if ($db_obj->connect_error) {
-echo "Connection Error: " . $db_obj->connect_error;
-exit();
-}
-
-$Vorname = $_POST["Vorname"];
-$Nachname = $_POST["Nachname"];
-$Email = $_POST["Email"];
-
-$sql = "INSERT INTO `player` (`Vorname`, `Nachname`, `Email`)
-VALUES (?, ?, ?)";
-$stmt = $db_obj->prepare($sql);
-$stmt-> bind_param("sss", $Vorname, $Nachname, $Email);
-
-if ($stmt->execute()) { echo "Account wurde erfolgreich angelegt"; } else { echo "Registrierung fehlgeschlagen"; }
-$stmt->close(); $db_obj->close();
-}
+      
+    $stmt->close();
+    $db_obj->close();
+  }  
 ?>
+
+
 <!DOCTYPE html>
 
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Registrierung</title>
+<title>Login</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -92,7 +65,7 @@ $stmt->close(); $db_obj->close();
 <div class="container">
   <div class="row">
     <div class="col">
-    <h1>Registrierung</h1>
+    <h1>Login</h1>
     <form method="post" action=""> 
 
         <div class="form-floating mb-3">              
@@ -100,18 +73,14 @@ $stmt->close(); $db_obj->close();
             <label for="name">Vorname</label>
             <span class="error">* <?php echo $VornameErr;?></span>
         </div>
-        <div class="form-floating mb-3">            
-            <input type="text" class="form-control" name="Nachname" id="surname" value="<?php echo $Nachname;?>">
-            <label for="surname">Nachname</label>
-            <span class="error">* <?php echo $NachnameErr;?></span>
-        </div>
         <div class="form-floating mb-3">  
             
-            <input type="text" class="form-control" name="Email" id="email" value="<?php echo $Email;?>">
-            <label for="email">Email</label>
-            <span class="error">* <?php echo $EmailErr;?></span>
-        </div>        
-        <button type="submit">registrieren</button>
+            <input type="password" class="form-control" name="Passwort" id="password" value="">
+            <label for="password">Passwort</label>
+            <span class="error">* <?php echo $PasswortErr;?></span>
+        </div>              
+        <button type="submit">Login</button>
+        <p><?php echo $loginMsg; ?></p>
         </form>
         </div>
       </div>
