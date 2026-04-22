@@ -36,19 +36,18 @@ $stmt->bind_result($Punktezahl, $Player, $Datum);
             </tr>
         </thead>
         <tbody>
-
-        <?php
+<?php
         
-            while($stmt->fetch()) {
-                echo "<tr>";
-                echo "<td>" . $Punktezahl . "</td>";
-                echo "<td>" . htmlspecialchars($Player) . "</td>";                
-                echo "<td>" . $Datum . "</td>";
-                echo "</tr>";
-            }
-        $stmt->close();
-        $db_obj->close();
-        ?>
+while($stmt->fetch()) {
+    echo "<tr>";
+    echo "<td>" . $Punktezahl . "</td>";
+    echo "<td>" . htmlspecialchars($Player) . "</td>";                
+    echo "<td>" . $Datum . "</td>";
+    echo "</tr>";
+}
+$stmt->close();
+$db_obj->close();
+?>
 
         </tbody>
     </table>

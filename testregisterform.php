@@ -2,52 +2,53 @@
 $VornameErr = $NachnameErr = $EmailErr = $PasswortErr = "";
 $Vorname = $Nachname = $Email = $Passwort = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST")
+{
+  if (empty($_POST["Vorname"])) 
   {
-      if (empty($_POST["Vorname"])) 
-      {
-        $VornameErr = "Dies ist ein Pflichtfeld";
-      } 
-      else 
-      {
-        $Vorname = inputvalidation($_POST["Vorname"]);
-        if (!preg_match("/^[a-zA-Z-' ]*$/",$Vorname)) 
-        {
-            $VornameErr = "Nur Buchstaben und Abstände erlaubt";
-        }
-      }
+    $VornameErr = "Dies ist ein Pflichtfeld";
+  } 
+  else 
+  {
+    $Vorname = inputvalidation($_POST["Vorname"]);
+    if (!preg_match("/^[a-zA-Z-' ]*$/",$Vorname)) 
+    {
+      $VornameErr = "Nur Buchstaben und Abstände erlaubt";
+    }
+  }
         
-      if (empty($_POST["Nachname"])) 
-      {
-        $NachnameErr = "Dies ist ein Pflichtfeld";
-      } 
-      else 
-      {
-        $Nachname = inputvalidation($_POST["Nachname"]);
-        if (!preg_match("/^[a-zA-Z-' ]*$/",$Nachname)) 
-        {
-            $NachnameErr = "Nur Buchstaben und Abstände erlaubt";
-        }
-      }
+  if (empty($_POST["Nachname"])) 
+  {
+    $NachnameErr = "Dies ist ein Pflichtfeld";
+  } 
+  else 
+  {
+    $Nachname = inputvalidation($_POST["Nachname"]);
+    if (!preg_match("/^[a-zA-Z-' ]*$/",$Nachname)) 
+    {
+      $NachnameErr = "Nur Buchstaben und Abstände erlaubt";
+    }
+  }
     
-      if (empty($_POST["Email"])) 
-      {
-        $EmailErr = "Dies ist ein Pflichtfeld";
-      } 
-      else 
-      {
-        $Email = inputvalidation($_POST["Email"]);  
-        if (!filter_var($Email, FILTER_VALIDATE_EMAIL))
-        {
-            $EmailErr = "Falsches Emailformat";
-        }        
-      }
-      if (empty($_POST["Passwort"])) {
-        $PasswortErr = "Dies ist ein Pflichtfeld";
-      } elseif (!preg_match('/[0-9]/', $_POST["Passwort"])) {
+  if (empty($_POST["Email"])) 
+  {
+    $EmailErr = "Dies ist ein Pflichtfeld";
+  } 
+  else 
+  {
+    $Email = inputvalidation($_POST["Email"]);  
+    if (!filter_var($Email, FILTER_VALIDATE_EMAIL))
+    {
+      $EmailErr = "Falsches Emailformat";
+    }        
+  }
+  if (empty($_POST["Passwort"]))
+  {
+    $PasswortErr = "Dies ist ein Pflichtfeld";
+  } elseif (!preg_match('/[0-9]/', $_POST["Passwort"])) {
         $PasswortErr = "Mindestens eine Zahl erforderlich!";
-      } else {
+  } else {
         $Passwort = $_POST["Passwort"];
-      }
+  }
     
   }
     function inputvalidation($data) {
