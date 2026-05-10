@@ -1,54 +1,70 @@
 <?php
-$VornameErr = $NachnameErr = $EmailErr = $PasswortErr = "";
-$Vorname = $Nachname = $Email = $Passwort = "";
+$VornameErr = $NachnameErr = $EmailErr = $BenutzernameErr = $PasswortErr = $PasswortagainErr = "";
+$Vorname = $Nachname = $Email = $Passwort = $Benutzername = $Passwortagain = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST")
-{
-  if (empty($_POST["Vorname"])) 
-  {
-    $VornameErr = "Dies ist ein Pflichtfeld";
-  } 
-  else 
-  {
-    $Vorname = inputvalidation($_POST["Vorname"]);
-    if (!preg_match("/^[a-zA-Z-' ]*$/",$Vorname)) 
-    {
-      $VornameErr = "Nur Buchstaben und Abstände erlaubt";
-    }
-  }
+  {    
+      if (empty($_POST["Vorname"])) 
+      {
+        $VornameErr = "Dies ist ein Pflichtfeld";
+      } 
+      else 
+      {
+        $Vorname = inputvalidation($_POST["Vorname"]);
+        if (!preg_match("/^[a-zA-Z-' ]*$/",$Vorname)) 
+        {
+            $VornameErr = "Nur Buchstaben und Abstände erlaubt";
+        }
+      }
         
-  if (empty($_POST["Nachname"])) 
-  {
-    $NachnameErr = "Dies ist ein Pflichtfeld";
-  } 
-  else 
-  {
-    $Nachname = inputvalidation($_POST["Nachname"]);
-    if (!preg_match("/^[a-zA-Z-' ]*$/",$Nachname)) 
-    {
-      $NachnameErr = "Nur Buchstaben und Abstände erlaubt";
-    }
-  }
+      if (empty($_POST["Nachname"])) 
+      {
+        $NachnameErr = "Dies ist ein Pflichtfeld";
+      } 
+      else 
+      {
+        $Nachname = inputvalidation($_POST["Nachname"]);
+        if (!preg_match("/^[a-zA-Z-' ]*$/",$Nachname)) 
+        {
+            $NachnameErr = "Nur Buchstaben und Abstände erlaubt";
+        }
+      }
+      if (empty($_POST["Benutzername"])) 
+      {
+        $BenutzernameErr = "Dies ist ein Pflichtfeld";
+      } 
+      else 
+      {
+        $Benutzername = $_POST["Benutzername"]; 
+      }
     
-  if (empty($_POST["Email"])) 
-  {
-    $EmailErr = "Dies ist ein Pflichtfeld";
-  } 
-  else 
-  {
-    $Email = inputvalidation($_POST["Email"]);  
-    if (!filter_var($Email, FILTER_VALIDATE_EMAIL))
-    {
-      $EmailErr = "Falsches Emailformat";
-    }        
-  }
-  if (empty($_POST["Passwort"]))
-  {
-    $PasswortErr = "Dies ist ein Pflichtfeld";
-  } elseif (!preg_match('/[0-9]/', $_POST["Passwort"])) {
+      if (empty($_POST["Email"])) 
+      {
+        $EmailErr = "Dies ist ein Pflichtfeld";
+      } 
+      else 
+      {
+        $Email = inputvalidation($_POST["Email"]);  
+        if (!filter_var($Email, FILTER_VALIDATE_EMAIL))
+        {
+            $EmailErr = "Falsches Emailformat";
+        }        
+      }
+      if (empty($_POST["Passwort"])) {
+        $PasswortErr = "Dies ist ein Pflichtfeld";
+      } elseif (!preg_match('/[0-9]/', $_POST["Passwort"])) {
         $PasswortErr = "Mindestens eine Zahl erforderlich!";
-  } else {
+      } else {
         $Passwort = $_POST["Passwort"];
-  }
+      }
+      if (empty($_POST["Passwortagain"])) {
+        $PasswortagainErr = "Dies ist ein Pflichtfeld";
+      } elseif (!preg_match('/[0-9]/', $_POST["Passwortagain"])) {
+        $PasswortagainErr = "Mindestens eine Zahl erforderlich!";
+      } elseif ($_POST["Passwort"] != $_POST["Passwortagain"]) {
+        $PasswortagainErr = "Passwort stimmt nicht überein!";      
+      } else {
+        $Passwort = $_POST["Passwortagain"];
+      }
     
   }
     function inputvalidation($data) {
@@ -63,7 +79,8 @@ require_once('dbaccess.php');
 
 if(isset($_POST["Vorname"]) && !empty($_POST["Vorname"]) && isset($_POST["Nachname"]) && !empty($_POST["Nachname"])
 && isset($_POST["Email"]) && !empty($_POST["Email"]) && isset ($_POST["Passwort"]) && !empty($_POST["Passwort"]) 
-&& empty($PasswortErr) && empty($VornameErr) && empty($NachnameErr) && empty($EmailErr))
+&& empty($PasswortErr) && empty($VornameErr) && empty($NachnameErr) && empty($EmailErr) && empty($BenutzernameErr) && empty($PasswortagainErr)
+&& isset ($_POST["Benutzername"]) && !empty($_POST["Benutzername"]) && isset ($_POST["Passwortagain"]) && !empty($_POST["Passwortagain"]))
 {
 
 
@@ -74,10 +91,10 @@ exit();
 }
 $Passwort = password_hash($Passwort, PASSWORD_DEFAULT);
 
-$sql = "INSERT INTO `player` (`Vorname`, `Nachname`, `Email`, `Passwort`, `Rolle`)
-VALUES (?, ?, ?, ?, 'guest')";
+$sql = "INSERT INTO `player` (`Benutzername`, `Vorname`, `Nachname`, `Email`, `Passwort`, `Rolle`)
+VALUES (?, ?, ?, ?, ?, 'guest')";
 $stmt = $db_obj->prepare($sql);
-$stmt-> bind_param("ssss", $Vorname, $Nachname, $Email, $Passwort);
+$stmt-> bind_param("sssss", $Benutzername, $Vorname, $Nachname, $Email, $Passwort);
 
 if ($stmt->execute()) { echo "Account wurde erfolgreich angelegt"; } else { echo "Registrierung fehlgeschlagen"; }
 $stmt->close(); $db_obj->close();
@@ -101,7 +118,7 @@ $stmt->close(); $db_obj->close();
   <div class="row">
     <div class="col">
     <h1>Registrierung</h1>
-    <form method="post" action=""> 
+    <form method="post" action="">         
 
         <div class="form-floating mb-3">              
             <input type="text" class="form-control" name="Vorname" id="name" value="<?php echo $Vorname;?>">
@@ -112,6 +129,11 @@ $stmt->close(); $db_obj->close();
             <input type="text" class="form-control" name="Nachname" id="surname" value="<?php echo $Nachname;?>">
             <label for="surname">Nachname</label>
             <span class="error">* <?php echo $NachnameErr;?></span>
+        </div>
+        <div class="form-floating mb-3">              
+            <input type="text" class="form-control" name="Benutzername" id="username" value="<?php echo $Benutzername;?>">
+            <label for="username">Benutzername</label>
+            <span class="error">* <?php echo $BenutzernameErr;?></span>
         </div>
         <div class="form-floating mb-3">  
             
@@ -124,7 +146,13 @@ $stmt->close(); $db_obj->close();
             <input type="password" class="form-control" name="Passwort" id="password" value="">
             <label for="password">Passwort</label>
             <span class="error">* <?php echo $PasswortErr;?></span>
-        </div>              
+        </div>  
+        <div class="form-floating mb-3">  
+            
+            <input type="password" class="form-control" name="Passwortagain" id="passwordagain" value="">
+            <label for="passwordagain">Passwort wiederholen</label>
+            <span class="error">* <?php echo $PasswortagainErr;?></span>
+        </div>                          
         <button type="submit">registrieren</button>
         </form>
         </div>

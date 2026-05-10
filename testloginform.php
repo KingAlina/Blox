@@ -1,10 +1,12 @@
 <?php
- $loginMsg = $Vorname = $VornameErr = $PasswortErr = "";
+session_start();
+
+ $loginMsg = $Benutzername = $BenutzernameErr = $PasswortErr = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST")
   {   
-    if (empty($_POST["Vorname"])) 
+    if (empty($_POST["Benutzername"])) 
       {
-        $VornameErr = "Dies ist ein Pflichtfeld";
+        $BenutzernameErr = "Dies ist ein Pflichtfeld";
       } 
 
     if (empty($_POST["Passwort"])) 
@@ -13,18 +15,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
       } 
     require_once('dbaccess.php');
 
-    if(isset($_POST["Vorname"]) && !empty($_POST["Vorname"]) && isset ($_POST["Passwort"]) && !empty($_POST["Passwort"]))
+    if(isset($_POST["Benutzername"]) && !empty($_POST["Benutzername"]) && isset ($_POST["Passwort"]) && !empty($_POST["Passwort"]))
     {
-        $Vorname = $_POST["Vorname"];
+        $Benutzername = $_POST["Benutzername"];
 
     $db_obj = new mysqli($host, $user, $password, $database);
     if ($db_obj->connect_error) {
     echo "Connection Error: " . $db_obj->connect_error;
     exit();
     }
-    $sql = "SELECT Passwort FROM player WHERE Vorname = ?";
+    $sql = "SELECT Passwort FROM player WHERE Benutzername = ?";
     $stmt = $db_obj->prepare($sql);
-    $stmt->bind_param("s", $Vorname);
+    $stmt->bind_param("s", $Benutzername);
     $stmt->execute();
     
     $stmt->bind_result($Passwort);
@@ -32,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     if ($stmt->fetch()) {
         if(password_verify($_POST["Passwort"], $Passwort)) {
         $loginMsg = "Valid password!<br>";
+        $_SESSION["Benutzername"] = $_POST["Benutzername"];
         } else {
             $loginMsg =  "Invalid password!<br>";
         }
@@ -42,9 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     $stmt->close();
     $db_obj->close();
     
-}
-      
-    
+}    
   }  
 ?>
 
@@ -70,9 +71,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     <form method="post" action=""> 
 
         <div class="form-floating mb-3">              
-            <input type="text" class="form-control" name="Vorname" id="name" value="<?php echo $Vorname;?>">
-            <label for="name">Vorname</label>
-            <span class="error">* <?php echo $VornameErr;?></span>
+            <input type="text" class="form-control" name="Benutzername" id="name" value="<?php echo $Benutzername;?>">
+            <label for="Benutzername">Benutzername</label>
+            <span class="error">* <?php echo $BenutzernameErr;?></span>
         </div>
         <div class="form-floating mb-3">  
             
