@@ -2,20 +2,20 @@
  $loginMsg = $Vorname = $VornameErr = $PasswortErr = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST")
   {   
-  if (empty($_POST["Vorname"])) 
-  {
-    $VornameErr = "Dies ist ein Pflichtfeld";
-  } 
+    if (empty($_POST["Vorname"])) 
+      {
+        $VornameErr = "Dies ist ein Pflichtfeld";
+      } 
 
-  if (empty($_POST["Passwort"])) 
-  {
-    $PasswortErr = "Dies ist ein Pflichtfeld";
-  } 
-  require_once('dbaccess.php');
+    if (empty($_POST["Passwort"])) 
+      {
+        $PasswortErr = "Dies ist ein Pflichtfeld";
+      } 
+    require_once('dbaccess.php');
 
-  if(isset($_POST["Vorname"]) && !empty($_POST["Vorname"]) && isset ($_POST["Passwort"]) && !empty($_POST["Passwort"]))
-  {
-    $Vorname = $_POST["Vorname"];
+    if(isset($_POST["Vorname"]) && !empty($_POST["Vorname"]) && isset ($_POST["Passwort"]) && !empty($_POST["Passwort"]))
+    {
+        $Vorname = $_POST["Vorname"];
 
     $db_obj = new mysqli($host, $user, $password, $database);
     if ($db_obj->connect_error) {
@@ -34,14 +34,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         $loginMsg = "Valid password!<br>";
         } else {
             $loginMsg =  "Invalid password!<br>";
-        }           
+        }
+           
     } else {
             $loginMsg = "User nicht gefunden!";
-        }    
-    }
-      
+        }
     $stmt->close();
     $db_obj->close();
+    
+}
+      
+    
   }  
 ?>
 
