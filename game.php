@@ -34,5 +34,4 @@ include "includes/header.php";
 </main>
 
 <script src="js/game.js"></script>
-
 <?php include "includes/footer.php"; ?>
