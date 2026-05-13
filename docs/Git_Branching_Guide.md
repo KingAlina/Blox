@@ -16,15 +16,10 @@ Erstelle einen eigenen Branch für dein Feature, ausgehend vom dev-Branch:
 git checkout -b feature/DEIN-BEREICH-kurzbeschreibung
 ```
 Unsere Bereiche:
-
 Alina: feature/scrum-...
-
 Aria: feature/frontend-...
-
 Michael: feature/backend-...
-
 Sophia: feature/game-logic-...
-
 Hina: feature/game-ui-...
 
 
@@ -50,6 +45,8 @@ git push -u origin feature/DEIN-BEREICH-kurzbeschreibung
 2. Klicke auf "Compare & pull request"
 3. Wähle als Ziel (base) den dev-branch aus
 4. Informiere mich (Alina), damit ich den Merge prüfen und durchführen kann. 
+
+
 
 
 
