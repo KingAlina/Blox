@@ -1,13 +1,41 @@
 * {
   box-sizing: border-box;
+  align-items: center;
+  margin: 0;
+  padding: 0;
 }
 
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: Arial;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background: #f4f6f8;
   color: #222;
   min-height: 100vh;
 }
+
+#grid {
+  width: min(80vw, 40vh);
+  aspect-ratio: 1 / 2;
+  display: flex;
+  flex-wrap: wrap;
+  border: 2px solid black;
+}
+
+.cell {
+  width: 10%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid #ccc;
+}
+
+
+.filled {
+  background-color: steelblue;
+}
+
 
 .container {
   max-width: 1000px;
@@ -24,28 +52,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 80px;
-}
-
-#grid {
-  width: 300px;
-  height: 600px;
-  display: flex;
-  flex-wrap: wrap;
-  border: 3px solid #222;
-  background-color: #444;
-  padding: 5px;
-}
-
-.cell {
-  width: 10%;
-  height: 5%;
-  border: 1px solid #ccc;
-  background-color: #e9ecef;
-}
-
-.filled {
-  background-color: steelblue;
+  gap: 100px;
 }
 
 .sidebar {
@@ -62,6 +69,11 @@ body {
   text-align: center;
 }
 
+.panel h2 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
 #score {
   font-size: 28px;
   font-weight: bold;
@@ -75,11 +87,14 @@ button {
   background-color: #2d89ef;
   color: white;
   border-radius: 6px;
-  margin: 3px;
 }
 
 button:hover {
   background-color: #1b5fa7;
+}
+
+.active {
+  background-color: red;
 }
 
 .controls {
@@ -88,4 +103,24 @@ button:hover {
   flex-direction: column;
   align-items: center;
   gap: 10px;
+}
+
+.middle {
+  display: flex;
+  gap: 10px;
+}
+
+.arrow {
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #444;
+  color: white;
+  cursor: pointer;
+}
+
+.arrow:hover {
+  background-color: #666;
 }
