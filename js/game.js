@@ -232,6 +232,7 @@ document.querySelector(".up").addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (e) => {
+  e.preventDefault();
   if (e.key === "ArrowLeft") {
     moveLeft();
   }
