@@ -20,8 +20,8 @@ if (!isset($pageTitle)) {
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 w-100">
+  <div class="container-fluid">
         <a class="navbar-brand" href="index.php">Blox</a>
 
         <div class="navbar-nav">
