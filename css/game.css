@@ -25,6 +25,18 @@ body {
   border: 2px solid black;
 }
 
+#next-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 30px);
+  grid-template-rows: repeat(4, 30px);
+  gap: 2px;
+}
+
+#next-grid .cell {
+  width: 30px;
+  height: 30px;
+}
+
 .cell {
   width: 10%;
   aspect-ratio: 1 / 1;
