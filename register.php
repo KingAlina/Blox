@@ -1,6 +1,6 @@
-includes/db.php
-
 <?php
+require_once('includes/db.php');
+
 $VornameErr = $NachnameErr = $EmailErr = "";
 $Vorname = $Nachname = $Email = "";
 
@@ -50,8 +50,6 @@ function inputvalidation($data) {
     $data = htmlspecialchars($data);
     return $data;
 }
-
-require_once('includes/db.php');
 
 if(isset($_POST["Vorname"]) && !empty($_POST["Vorname"]) && isset($_POST["Nachname"]) && !empty($_POST["Nachname"])
 && isset($_POST["Email"]) && !empty($_POST["Email"]))
