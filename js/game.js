@@ -1,8 +1,10 @@
 const rows = 20;
 const cols = 10;
 const board = Array.from({ length: rows }, () => Array(cols).fill(0)); //nur logisch nicht visuell, 2D
-
-//let gameOver = false;
+let score = 0;
+let points = [0, 100, 300, 500, 800];
+let totalLinesCleared = 0;
+let gameSpeed = 1000;
 
 //To Do: Interface?
 let block;
@@ -248,6 +250,10 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowDown") {
     moveDown();
   }
+
+  if(e.code === "Space"){
+    hardDrop();
+  }
 });
 
 function moveLeft(){
@@ -269,11 +275,26 @@ function moveDown() {
     block.y++;
   } else {
     freezeBlock();
+    clearLines();
     createNewBlock();
     if (!canCreateBlock()) {
       gameOver();
       return;
     }
+  }
+  drawBoard();
+}
+
+function hardDrop(){
+  while(canMoveDown()){
+    block.y++;
+  }
+  freezeBlock();
+  clearLines();
+  createNewBlock();
+  if(!canCreateBlock()){
+    gameOver();
+    return;
   }
   drawBoard();
 }
@@ -291,6 +312,7 @@ function freezeBlock() {
   }
 }
 
+//Game Loop
 let timerId = setInterval(moveDown, 1000);
 
 function gameOver() {
@@ -339,5 +361,26 @@ function rotateBlock(){
   if(canRotate(rotatedShape)){
     block.shape = rotatedShape;
     drawBoard();
+  }
+}
+
+//Punktesystem: 1 Reihe = 100 Punkte, 2 Reihen = 300 Punkte, 3 Reihen = 500 Punkte, 4 Reihen = 800 Punkte
+
+function clearLines(){
+  let clearedLines = 0;
+  for(let row = 0; row < rows; row++){
+    if(board[row].every(cell => cell === 1)){ //prüft ob alle Felder === 1 sind
+      board.splice(row, 1); //Reihe löschen
+      board.unshift(Array(cols).fill(0)); //neue Reihe mit 0 gefüllt
+      clearedLines++;
+    }
+  }
+  score += points[clearedLines];  //clearedLines werden Array Index
+  document.getElementById("score").textContent = score; //anzeigen
+  totalLinesCleared += clearedLines;
+  if(totalLinesCleared % 5 === 0 && totalLinesCleared > 0 && gameSpeed > 175){//alle 5 gelöschten Reihen Level Up
+    clearInterval(timerId);
+    gameSpeed -= 75;
+    timerId = setInterval(moveDown, gameSpeed);
   }
 }
