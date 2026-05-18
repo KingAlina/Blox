@@ -7,21 +7,29 @@ include "includes/header.php";
   <h1 class="title">BLOX</h1>
 
   <div class="game-wrapper">
+
+    <aside class="sidebar left">
+      <div class="panel hold">
+        <h2>HOLD</h2>
+        <div id="hold-grid"></div>
+      </div>
+    </aside>
+
     <div id="grid"></div>
 
-    <aside class="sidebar">
+    <aside class="sidebar right">
 
-      <div class="panel">
-        <h2>Next</h2>
+      <div class="panel next">
+        <h2>NEXT</h2>
         <div id="next-grid"></div>
       </div>
 
-      <div class="panel">
+      <div class="panel score">
         <h2>Score</h2>
         <p id="score">0</p>
       </div>
 
-      <div class="panel">
+      <div class="panel button">
         <button type="button">Start</button>
       </div>
 
