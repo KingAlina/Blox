@@ -33,6 +33,7 @@ include "includes/header.php";
           <button class="arrow down">▼</button>
           <button class="arrow right">▶</button>
         </div>
+        <p>Space = hard drop</p>
       </div>
     </aside>
   </div>
