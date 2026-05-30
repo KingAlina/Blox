@@ -3,8 +3,6 @@ $pageTitle = "Blox Game";
 include "includes/header.php";
 ?>
 
-
-
 <div class="container">
   <h1 class="title">BLOX</h1>
   <div id="countdown-overlay"></div>
@@ -39,7 +37,7 @@ include "includes/header.php";
       </div>
 
       <div class="panel button">
-        <button type="button" id="start-button">Start</button>
+        <button type="button" id="start-button">Play</button>
         <button type="button" id="pause-button">Pause</button>
         <button type="button" id="reset-button">Reset</button>
       </div>
@@ -58,10 +56,10 @@ include "includes/header.php";
 </div>
 
 <!--js Files müssen in dieser Reihenfolge geladen werden -->
-<script src="js/data.js"></script>
-<script src="js/render.js"></script>
-<script src="js/logic.js"></script>
-<script src="js/gameState.js"></script>
-<script src="js/game.js"></script>
+<script src="/Blox/js/data.js?v=<?php echo time(); ?>"></script>
+<script src="/Blox/js/render.js?v=<?php echo time(); ?>"></script>
+<script src="/Blox/js/logic.js?v=<?php echo time(); ?>"></script>
+<script src="/Blox/js/gameState.js?v=<?php echo time(); ?>"></script>
+<script src="/Blox/js/game.js?v=<?php echo time(); ?>"></script>
 
 <?php include "includes/footer.php"; ?>
