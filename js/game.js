@@ -5,10 +5,18 @@ let score = 0;
 let points = [0, 100, 300, 500, 800];
 let totalLinesCleared = 0;
 let gameSpeed = 1000;
+let isGameRunning = false;
+let isPaused = false;
+let timerId = null;
+let isCountdownRunning = false;
+const countdown = document.getElementById("countdown-overlay");
+const gameOverOverlay = document.getElementById("game-over-overlay");
+const finalScore = document.getElementById("final-score");
 
 //To Do: Interface?
 let block;
 let nextShape;
+
 
 const shapes = [
   [
@@ -52,6 +60,16 @@ const shapes = [
   ],
 ];
 
+function initGame(){
+  nextShape = getRandomShape();
+  drawNextShape();
+  drawBoard();
+
+  document.getElementById("start-button").addEventListener("click", startGame);
+  document.getElementById("pause-button").addEventListener("click", pauseGame);
+  document.getElementById("reset-button").addEventListener("click", resetGame);
+}
+
 const grid = document.getElementById("grid");
 //200 Zellen in Gameboard erzeugen
 for (let i = 0; i < rows * cols; i++) {
@@ -72,29 +90,50 @@ for(let i = 0; i < 16; i++){
 const cells = Array.from(grid.children); //visuelle Darstellung mittels 1D Array
 const nextCells = Array.from(nextGrid.children);
 
-//console.log(cells);
 function drawBoard() {
-  //alles leeren
+  // alles leeren
   cells.forEach((cell) => {
-    cell.classList.remove("filled");
+    cell.classList.remove("filled", "ghost");
   });
-  //feste Blöcke im Board
+  // feste Blöcke im Board
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
+
       if (board[y][x] === 1) {
         const index = y * cols + x;
         cells[index].classList.add("filled");
       }
     }
   }
-  // aktuell fallender Block
-  for (let row = 0; row < block.shape.length; row++) {
-    for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
-        const x = block.x + col;
-        const y = block.y + row;
-        const index = y * cols + x;
-        cells[index].classList.add("filled");
+  // Ghost + echter Block
+  if (block) {
+    // Ghost Position berechnen
+    const ghostY = getGhostY();
+    // Ghost zeichnen
+    for (let row = 0; row < block.shape.length; row++) {
+      for (let col = 0; col < block.shape[row].length; col++) {
+        if (block.shape[row][col] === 1) {
+          const x = block.x + col;
+          const y = ghostY + row;
+          const index = y * cols + x;
+          // nicht über feste Blöcke zeichnen
+          const realX = block.x + col;
+          const realY = block.y + row;
+          if (x !== realX || y !== realY) {
+            cells[index].classList.add("ghost");
+          }
+        }
+      }
+    }
+    // echten Block zeichnen
+    for (let row = 0; row < block.shape.length; row++) {
+      for (let col = 0; col < block.shape[row].length; col++) {
+        if (block.shape[row][col] === 1) {
+          const x = block.x + col;
+          const y = block.y + row;
+          const index = y * cols + x;
+          cells[index].classList.add("filled");
+        }
       }
     }
   }
@@ -152,13 +191,6 @@ function createNewBlock() {
   drawNextShape();
 }
 
-
-
-//Spielstart, TODO: start/pause button
-nextShape = getRandomShape();
-createNewBlock();
-drawBoard();
-
 function canMoveDown() {
   //Form durchgehen
   for (let row = 0; row < block.shape.length; row++) {
@@ -176,6 +208,30 @@ function canMoveDown() {
     }
   }
   return true;
+}
+
+function getGhostY(){
+  let ghostY = block.y;
+  while(true){
+    let canMove = true;
+    for(let row = 0; row < block.shape.length; row++){
+      for(let col = 0; col < block.shape[row].length; col++){
+        if(block.shape[row][col] === 1){
+          const x = block.x + col;
+          const newY = ghostY + row + 1;
+
+          if(newY >= rows || board[newY][x] === 1){
+            canMove = false;
+          }
+        }
+      }
+    }
+    if(!canMove){
+      break;
+    }
+    ghostY++;
+  }
+  return ghostY;
 }
 
 function canMoveLeft(){
@@ -257,6 +313,9 @@ document.addEventListener("keydown", (e) => {
 });
 
 function moveLeft(){
+  if(isCountdownRunning){
+    return;
+  }
   if(canMoveLeft()){
     block.x--;
     drawBoard();
@@ -264,6 +323,9 @@ function moveLeft(){
 }
 
 function moveRight(){
+  if(isCountdownRunning){
+    return;
+  }
   if(canMoveRight()){
     block.x++;
     drawBoard();
@@ -271,6 +333,9 @@ function moveRight(){
 }
 
 function moveDown() {
+  if(isCountdownRunning){
+    return;
+  }
   if (canMoveDown()) {
     block.y++;
   } else {
@@ -286,6 +351,9 @@ function moveDown() {
 }
 
 function hardDrop(){
+  if(isCountdownRunning){
+    return;
+  }
   while(canMoveDown()){
     block.y++;
   }
@@ -312,12 +380,101 @@ function freezeBlock() {
   }
 }
 
-//Game Loop
-let timerId = setInterval(moveDown, 1000);
+function startGame(){
+  if(isGameRunning && !isPaused){
+    return;
+  }
+  if(!block){
+    createNewBlock();
+    drawBoard();
+  }
+  clearInterval(timerId);
+  isGameRunning = true;
+  isPaused = false;
+  showCountdown();
+}
+
+function pauseGame(){
+  if(!isGameRunning || isPaused || isCountdownRunning){
+    return;
+  }
+  clearInterval(timerId);
+  timerId = null;
+  isPaused = true;
+}
+
+function resetGame(){
+  clearInterval(timerId);
+  timerId = null;
+  isGameRunning = false;
+  isPaused = false;
+  block = null;
+
+  for(let row = 0; row < rows; row++){
+    board[row].fill(0);
+  }
+  score = 0;
+  totalLinesCleared = 0;
+  gameSpeed = 1000;
+  document.getElementById("score").textContent = score;
+  nextShape = getRandomShape();
+  drawNextShape();
+  drawBoard();
+}
+
+function showCountdown(){
+  isCountdownRunning = true;
+  countdown.style.display = "flex";
+  countdown.textContent = "3";
+  setTimeout(() => {
+    countdown.textContent = "2";
+  }, 1000);
+  setTimeout(() => {
+    countdown.textContent = "1";
+  }, 2000);
+  setTimeout(() => {
+    countdown.textContent = "GO";
+  }, 3000);
+  setTimeout(() => {
+    countdown.style.display = "none";
+    isCountdownRunning = false;
+    timerId = setInterval(moveDown, gameSpeed);
+  }, 4000);
+}
+
+document.getElementById("restart-button").addEventListener("click", () => {
+  gameOverOverlay.style.display = "none";
+  resetGame();
+  startGame();
+});
 
 function gameOver() {
-  alert("Game Over!");
   clearInterval(timerId);
+  timerId = null;
+
+  isGameRunning = false;
+  isPaused = false;
+
+  finalScore.textContent = score;
+  gameOverOverlay.style.display = "flex";
+  saveScore(score);
+}
+
+//Backend-Anbindung vorbereitet, TODO
+async function saveScore(score) {
+
+  const response = await fetch("save_score.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      score: score
+    })
+  });
+
+  const data = await response.json();
+  console.log(data);
 }
 
 //Rotation erstellen
@@ -356,6 +513,9 @@ function canRotate(shape){
 
 //Block wird rotiert
 function rotateBlock(){
+  if(isCountdownRunning){
+    return;
+  }
   const rotatedShape = getRotatedShape(block.shape);
 
   if(canRotate(rotatedShape)){
@@ -384,3 +544,5 @@ function clearLines(){
     timerId = setInterval(moveDown, gameSpeed);
   }
 }
+
+initGame();

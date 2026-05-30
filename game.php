@@ -7,6 +7,14 @@ include "includes/header.php";
 
 <div class="container">
   <h1 class="title">BLOX</h1>
+  <div id="countdown-overlay"></div>
+  <div id="game-over-overlay">
+    <div class="game-over-box">
+      <h2>Game Over</h2>
+      <p>Final Score: <span id="final-score">0</span></p>
+      <button type="button" id="restart-button">Restart</button>
+    </div>
+  </div>
 
   <div class="game-wrapper">
 
@@ -18,7 +26,6 @@ include "includes/header.php";
     </aside>
 
     <div class="grid" id="grid">
-
     </div>
 
     <aside class="sidebar info-sidebar">
@@ -32,7 +39,9 @@ include "includes/header.php";
       </div>
 
       <div class="panel button">
-        <button type="button">Start</button>
+        <button type="button" id="start-button">Start</button>
+        <button type="button" id="pause-button">Pause</button>
+        <button type="button" id="reset-button">Reset</button>
       </div>
 
       <div class="controls">
@@ -48,6 +57,11 @@ include "includes/header.php";
   </div>
 </div>
 
+<!--js Files müssen in dieser Reihenfolge geladen werden -->
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script src="js/logic.js"></script>
+<script src="js/gameState.js"></script>
 <script src="js/game.js"></script>
 
 <?php include "includes/footer.php"; ?>
