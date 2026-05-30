@@ -15,6 +15,7 @@ include "includes/header.php";
         <h2>HOLD</h2>
         <div id="hold-grid"></div>
       </div>
+      <p>(Hold with shift)</p>
     </aside>
 
     <div class="grid" id="grid">

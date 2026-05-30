@@ -62,12 +62,11 @@ for (let i = 0; i < rows * cols; i++) {
 
 const nextGrid = document.getElementById("next-grid");
 // 16 Zellen Vorschau
-for(let i = 0; i < 16; i++){
+for (let i = 0; i < 16; i++) {
   const cell = document.createElement("div");
   cell.classList.add("cell");
   nextGrid.appendChild(cell);
 }
-
 
 const cells = Array.from(grid.children); //visuelle Darstellung mittels 1D Array
 const nextCells = Array.from(nextGrid.children);
@@ -100,17 +99,18 @@ function drawBoard() {
   }
 }
 
-function drawNextShape(){
-  nextCells.forEach((cell) => 
-    {cell.classList.remove("filled");});
+function drawNextShape() {
+  nextCells.forEach((cell) => {
+    cell.classList.remove("filled");
+  });
 
   //Offset, damit Block mittig platziert werden kann
   const offsetX = Math.floor((4 - nextShape[0].length) / 2);
   const offsetY = Math.floor((4 - nextShape.length) / 2);
 
-  for(let row = 0; row < nextShape.length; row++){
-    for(let col = 0; col < nextShape[row].length; col++){
-      if(nextShape[row][col] === 1){
+  for (let row = 0; row < nextShape.length; row++) {
+    for (let col = 0; col < nextShape[row].length; col++) {
+      if (nextShape[row][col] === 1) {
         const index = (row + offsetY) * 4 + (col + offsetX);
         nextCells[index].classList.add("filled");
       }
@@ -135,24 +135,38 @@ function canCreateBlock() {
   return true;
 }
 
-function getRandomShape(){
+function getRandomShape() {
   const randomIndex = Math.floor(Math.random() * shapes.length); //Zahl zwischen 0 und 6
   const randomShape = shapes[randomIndex];
-  return randomShape
+  return randomShape;
 }
 
-function createNewBlock() {
-  const randomShape = nextShape;
-  nextShape = getRandomShape();
+// function createNewBlock() {
+//   const randomShape = nextShape;
+//   nextShape = getRandomShape();
+//   block = {
+//     shape: randomShape,
+//     x: Math.floor((cols - randomShape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
+//     y: 0,
+//   };
+//   drawNextShape();
+// }
+
+function createNewBlock(shape = nextShape) {
+  const newShape = shape;
+
+  if (shape === nextShape) {
+    nextShape = getRandomShape();
+  }
+
   block = {
-    shape: randomShape,
-    x: Math.floor((cols - randomShape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
+    shape: newShape,
+    x: Math.floor((cols - newShape[0].length) / 2),
     y: 0,
   };
+
   drawNextShape();
 }
-
-
 
 //Spielstart, TODO: start/pause button
 nextShape = getRandomShape();
@@ -178,37 +192,38 @@ function canMoveDown() {
   return true;
 }
 
-function canMoveLeft(){
+function canMoveLeft() {
   //Form durchgehen, Zeilen, Spalten
-  for (let row = 0; row < block.shape.length; row++){
-    for(let col = 0; col < block.shape[row].length; col++){
+  for (let row = 0; row < block.shape.length; row++) {
+    for (let col = 0; col < block.shape[row].length; col++) {
       //wenn Feld gefüllt
-      if(block.shape[row][col] === 1){
+      if (block.shape[row][col] === 1) {
         const newX = block.x + col - 1;
         const y = block.y + row;
-        if(newX < 0){
-          return false //links ist Wand
+        if (newX < 0) {
+          return false; //links ist Wand
         }
-        if(board[y][newX] === 1){
-          return false //links ist Block
+        if (board[y][newX] === 1) {
+          return false; //links ist Block
         }
       }
     }
   }
-  return true; 
+  return true;
 }
 
-function canMoveRight(){
-  for(let row = 0; row < block.shape.length; row++){
-    for(let col = 0; col < block.shape[row].length; col++){
-      if(block.shape[row][col] === 1){//Feld gefüllt
+function canMoveRight() {
+  for (let row = 0; row < block.shape.length; row++) {
+    for (let col = 0; col < block.shape[row].length; col++) {
+      if (block.shape[row][col] === 1) {
+        //Feld gefüllt
         const newX = block.x + col + 1;
         const y = block.y + row;
-        if(newX >= cols){
-          return false //rechts ist Wand
+        if (newX >= cols) {
+          return false; //rechts ist Wand
         }
-        if(board[y][newX] === 1){
-          return false //rechts ist Block
+        if (board[y][newX] === 1) {
+          return false; //rechts ist Block
         }
       }
     }
@@ -243,7 +258,7 @@ document.addEventListener("keydown", (e) => {
     moveRight();
   }
 
-  if (e.key === "ArrowUp"){
+  if (e.key === "ArrowUp") {
     rotateBlock();
   }
 
@@ -251,20 +266,24 @@ document.addEventListener("keydown", (e) => {
     moveDown();
   }
 
-  if(e.code === "Space"){
+  if (e.code === "Space") {
     hardDrop();
+  }
+
+  if (e.key === "Shift") {
+    holdBlock();
   }
 });
 
-function moveLeft(){
-  if(canMoveLeft()){
+function moveLeft() {
+  if (canMoveLeft()) {
     block.x--;
     drawBoard();
   }
 }
 
-function moveRight(){
-  if(canMoveRight()){
+function moveRight() {
+  if (canMoveRight()) {
     block.x++;
     drawBoard();
   }
@@ -275,6 +294,7 @@ function moveDown() {
     block.y++;
   } else {
     freezeBlock();
+    canHold = true;
     clearLines();
     createNewBlock();
     if (!canCreateBlock()) {
@@ -285,14 +305,15 @@ function moveDown() {
   drawBoard();
 }
 
-function hardDrop(){
-  while(canMoveDown()){
+function hardDrop() {
+  while (canMoveDown()) {
     block.y++;
   }
   freezeBlock();
+  canHold = true;
   clearLines();
   createNewBlock();
-  if(!canCreateBlock()){
+  if (!canCreateBlock()) {
     gameOver();
     return;
   }
@@ -321,13 +342,13 @@ function gameOver() {
 }
 
 //Rotation erstellen
-function getRotatedShape(shape){
+function getRotatedShape(shape) {
   const rotatedShape = [];
   //Spalten werden neue Zeilen
-  for(let col = 0; col < shape[0].length; col++){
+  for (let col = 0; col < shape[0].length; col++) {
     const newRow = [];
     //letzer Zeileneintrag in Spalte wird erster Spalteneintrag in Zeile
-    for(let row = shape.length - 1; row >= 0; row--){
+    for (let row = shape.length - 1; row >= 0; row--) {
       newRow.push(shape[row][col]);
     }
     rotatedShape.push(newRow);
@@ -336,16 +357,19 @@ function getRotatedShape(shape){
 }
 
 //Rotation ohne Kollision möglich
-function canRotate(shape){
-  for(let row = 0; row < shape.length; row++){
-    for(let col = 0; col < shape[row].length; col++){
-      if(shape[row][col] === 1){ //nur prüfen wenn Form dort ist
+function canRotate(shape) {
+  for (let row = 0; row < shape.length; row++) {
+    for (let col = 0; col < shape[row].length; col++) {
+      if (shape[row][col] === 1) {
+        //nur prüfen wenn Form dort ist
         const x = block.x + col;
-        const y = block.y + row;  //neue Position im Board
-        if(x < 0 || x >= cols || y >= rows){ //außerhalb von Board
-          return false 
+        const y = block.y + row; //neue Position im Board
+        if (x < 0 || x >= cols || y >= rows) {
+          //außerhalb von Board
+          return false;
         }
-        if(board[y][x] === 1){ //Kollision mit Block
+        if (board[y][x] === 1) {
+          //Kollision mit Block
           return false;
         }
       }
@@ -355,10 +379,10 @@ function canRotate(shape){
 }
 
 //Block wird rotiert
-function rotateBlock(){
+function rotateBlock() {
   const rotatedShape = getRotatedShape(block.shape);
 
-  if(canRotate(rotatedShape)){
+  if (canRotate(rotatedShape)) {
     block.shape = rotatedShape;
     drawBoard();
   }
@@ -366,21 +390,74 @@ function rotateBlock(){
 
 //Punktesystem: 1 Reihe = 100 Punkte, 2 Reihen = 300 Punkte, 3 Reihen = 500 Punkte, 4 Reihen = 800 Punkte
 
-function clearLines(){
+function clearLines() {
   let clearedLines = 0;
-  for(let row = 0; row < rows; row++){
-    if(board[row].every(cell => cell === 1)){ //prüft ob alle Felder === 1 sind
+  for (let row = 0; row < rows; row++) {
+    if (board[row].every((cell) => cell === 1)) {
+      //prüft ob alle Felder === 1 sind
       board.splice(row, 1); //Reihe löschen
       board.unshift(Array(cols).fill(0)); //neue Reihe mit 0 gefüllt
       clearedLines++;
     }
   }
-  score += points[clearedLines];  //clearedLines werden Array Index
+  score += points[clearedLines]; //clearedLines werden Array Index
   document.getElementById("score").textContent = score; //anzeigen
   totalLinesCleared += clearedLines;
-  if(totalLinesCleared % 5 === 0 && totalLinesCleared > 0 && gameSpeed > 175){//alle 5 gelöschten Reihen Level Up
+  if (totalLinesCleared % 5 === 0 && totalLinesCleared > 0 && gameSpeed > 175) {
+    //alle 5 gelöschten Reihen Level Up
     clearInterval(timerId);
     gameSpeed -= 75;
     timerId = setInterval(moveDown, gameSpeed);
   }
+}
+
+//Hold Funktion
+let holdShape = null;
+let canHold = true;
+
+const holdGrid = document.getElementById("hold-grid");
+
+for (let i = 0; i < 16; i++) {
+  const cell = document.createElement("div");
+  cell.classList.add("cell");
+  holdGrid.appendChild(cell);
+}
+
+const holdCells = Array.from(holdGrid.children);
+
+function drawHoldShape() {
+  holdCells.forEach((cell) => {
+    cell.classList.remove("filled");
+  });
+
+  if (holdShape === null) return;
+
+  const offsetX = Math.floor((4 - holdShape[0].length) / 2);
+  const offsetY = Math.floor((4 - holdShape.length) / 2);
+
+  for (let row = 0; row < holdShape.length; row++) {
+    for (let col = 0; col < holdShape[row].length; col++) {
+      if (holdShape[row][col] === 1) {
+        const index = (row + offsetY) * 4 + (col + offsetX);
+        holdCells[index].classList.add("filled");
+      }
+    }
+  }
+}
+
+function holdBlock() {
+  if (!canHold) return;
+
+  if (holdShape === null) {
+    holdShape = block.shape;
+    createNewBlock();
+  } else {
+    const temp = block.shape;
+    createNewBlock(holdShape);
+    holdShape = temp;
+  }
+
+  canHold = false;
+  drawHoldShape();
+  drawBoard();
 }
