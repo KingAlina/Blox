@@ -140,14 +140,18 @@ function moveDown() {
 
   if (canMoveDown()) {
     block.y++;
+    drawBoard();
   } else {
     freezeBlock();
-    clearLines();
+    const linesWereCleared = clearLines();
     createNewBlock();
 
     if (!canCreateBlock()) {
       gameOver();
       return;
+    }
+    if(!linesWereCleared){
+      drawBoard();
     }
   }
 
@@ -225,34 +229,71 @@ function canRotate(shape) {
 
 function rotateBlock() {
   if (!canControlGame()) return;
-
   const rotatedShape = getRotatedShape(block.shape);
-
+  // 1. normale Rotation versuchen
   if (canRotate(rotatedShape)) {
     block.shape = rotatedShape;
     drawBoard();
+    return;
+  }
+  // 2. Wall Kicks versuchen
+  const kicks = [-1, 1, -2, 2, -3, 3];
+  for (let kick of kicks) {
+    block.x += kick;
+
+    if (canRotate(rotatedShape)) {
+      block.shape = rotatedShape;
+      drawBoard();
+      return;
+    }
+    block.x -= kick;
   }
 }
 
 function clearLines() {
-  let clearedLines = 0;
+  const fullRows = [];
 
   for (let row = 0; row < rows; row++) {
     if (board[row].every((cell) => cell === 1)) {
-      board.splice(row, 1);
-      board.unshift(Array(cols).fill(0));
-      clearedLines++;
+      fullRows.push(row);
     }
   }
 
-  score += points[clearedLines];
-  scoreElement.textContent = score;
-
-  totalLinesCleared += clearedLines;
-
-  if (totalLinesCleared % 5 === 0 && totalLinesCleared > 0 && gameSpeed > 175) {
-    clearInterval(timerId);
-    gameSpeed -= 75;
-    timerId = setInterval(moveDown, gameSpeed);
+  if (fullRows.length === 0) {
+    return false;
   }
+
+  // Animation anzeigen
+  fullRows.forEach((row) => {
+    for (let col = 0; col < cols; col++) {
+      const index = row * cols + col;
+      cells[index].style.backgroundColor = "#cfe8ff";
+      cells[index].style.animation = "clearFlash 3s infinite";
+    }
+  });
+   // Browser zwingt zum Rendern
+   void grid.offsetHeight;
+
+  // Nach kurzer Zeit wirklich löschen
+  setTimeout(() => {
+    fullRows.forEach((row) => {
+      board.splice(row, 1);
+      board.unshift(Array(cols).fill(0));
+    });
+
+    score += points[fullRows.length];
+    scoreElement.textContent = score;
+    totalLinesCleared += fullRows.length;
+    if (totalLinesCleared % 5 === 0 && totalLinesCleared > 0 && gameSpeed > 175) {
+      clearInterval(timerId);
+      gameSpeed -= 75;
+      timerId = setInterval(moveDown, gameSpeed);
+    }
+    cells.forEach((cell) => {
+      cell.style.backgroundColor = "";
+      cell.style.animation = "";
+    });
+    drawBoard();
+  }, 200);
+  return true;
 }

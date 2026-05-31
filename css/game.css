@@ -223,3 +223,18 @@ button:hover {
 .filled {
   background-color: steelblue;
 }
+
+@keyframes clearFlash {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.4;
+    filter: brightness(2.8);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}

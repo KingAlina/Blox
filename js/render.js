@@ -1,6 +1,6 @@
 function drawBoard() {
   cells.forEach((cell) => {
-    cell.classList.remove("filled", "ghost");
+    cell.classList.remove("filled", "ghost", "clearing");
   });
 
   for (let y = 0; y < rows; y++) {
