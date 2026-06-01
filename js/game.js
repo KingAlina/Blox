@@ -11,47 +11,67 @@ let block;
 let nextShape;
 
 const shapes = [
-  [
-    //Block
-    [1, 1],
-    [1, 1],
-  ],
-  [
-    //I
-    [1],
-    [1],
-    [1],
-    [1],
-  ],
-  [
-    //L
-    [1, 0],
-    [1, 0],
-    [1, 1],
-  ],
-  [
-    //J
-    [0, 1],
-    [0, 1],
-    [1, 1],
-  ],
-  [
-    //T
-    [1, 1, 1],
-    [0, 1, 0],
-  ],
-  [
-    //Z
-    [1, 1, 0],
-    [0, 1, 1],
-  ],
-  [
-    //S
-    [0, 1, 1],
-    [1, 1, 0],
-  ],
+  {
+    name: "O",
+    color: "yellow",
+    shape: [
+      [1, 1],
+      [1, 1],
+    ],
+  },
+  {
+    name: "I",
+    color: "cyan",
+    shape: [
+      [1],
+      [1],
+      [1],
+      [1],
+    ],
+  },
+  {
+    name: "L",
+    color: "orange",
+    shape: [
+      [1, 0],
+      [1, 0],
+      [1, 1],
+    ],
+  },
+  {
+    name: "J",
+    color: "blue",
+    shape: [
+      [0, 1],
+      [0, 1],
+      [1, 1],
+    ],
+  },
+  {
+    name: "T",
+    color: "purple",
+    shape: [
+      [1, 1, 1],
+      [0, 1, 0],
+    ],
+  },
+  {
+    name: "Z",
+    color: "red",
+    shape: [
+      [1, 1, 0],
+      [0, 1, 1],
+    ],
+  },
+  {
+    name: "S",
+    color: "green",
+    shape: [
+      [0, 1, 1],
+      [1, 1, 0],
+    ],
+  },
 ];
-
 const grid = document.getElementById("grid");
 //200 Zellen in Gameboard erzeugen
 for (let i = 0; i < rows * cols; i++) {
@@ -76,24 +96,25 @@ function drawBoard() {
   //alles leeren
   cells.forEach((cell) => {
     cell.classList.remove("filled");
+    cell.className = "cell";
   });
   //feste Blöcke im Board
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
-      if (board[y][x] === 1) {
+      if (board[y][x] !== 0) {
         const index = y * cols + x;
-        cells[index].classList.add("filled");
+        cells[index].classList.add("filled", board[y][x]);
       }
     }
   }
   // aktuell fallender Block
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const x = block.x + col;
         const y = block.y + row;
         const index = y * cols + x;
-        cells[index].classList.add("filled");
+        cells[index].classList.add("filled", block.color);
       }
     }
   }
@@ -101,18 +122,21 @@ function drawBoard() {
 
 function drawNextShape() {
   nextCells.forEach((cell) => {
-    cell.classList.remove("filled");
+    cell.className = "cell";
   });
 
-  //Offset, damit Block mittig platziert werden kann
-  const offsetX = Math.floor((4 - nextShape[0].length) / 2);
-  const offsetY = Math.floor((4 - nextShape.length) / 2);
+  const shape = nextShape.shape;
+  const color = nextShape.color;
 
-  for (let row = 0; row < nextShape.length; row++) {
-    for (let col = 0; col < nextShape[row].length; col++) {
-      if (nextShape[row][col] === 1) {
+  //Offset, damit Block mittig platziert werden kann
+  const offsetX = Math.floor((4 - shape[0].length) / 2);
+  const offsetY = Math.floor((4 - shape.length) / 2);
+
+  for (let row = 0; row < shape.length; row++) {
+    for (let col = 0; col < shape[row].length; col++) {
+      if (shape[row][col] !== 0) {
         const index = (row + offsetY) * 4 + (col + offsetX);
-        nextCells[index].classList.add("filled");
+        nextCells[index].classList.add("filled", color);
       }
     }
   }
@@ -122,11 +146,11 @@ function canCreateBlock() {
   //falls kein Platz mehr liefert false
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         //prüfen ob Feld frei?
         const x = block.x + col;
         const y = block.y + row;
-        if (board[y][x] === 1) {
+        if (board[y][x] !== 0) {
           return false;
         }
       }
@@ -137,8 +161,7 @@ function canCreateBlock() {
 
 function getRandomShape() {
   const randomIndex = Math.floor(Math.random() * shapes.length); //Zahl zwischen 0 und 6
-  const randomShape = shapes[randomIndex];
-  return randomShape;
+  return shapes[randomIndex];
 }
 
 // function createNewBlock() {
@@ -160,8 +183,9 @@ function createNewBlock(shape = nextShape) {
   }
 
   block = {
-    shape: newShape,
-    x: Math.floor((cols - newShape[0].length) / 2),
+    shape: randomShape.shape,
+    color: randomShape.color,
+    x: Math.floor((cols - randomShape.shape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
     y: 0,
   };
 
@@ -178,12 +202,12 @@ function canMoveDown() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
       //wenn gefüllter Teil des Blocks
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         //neue Position nach Bewegung
         const x = block.x + col;
         const newY = block.y + row + 1;
         //wenn es außerhalb des Spielfelds wäre oder schon belegt ist
-        if (newY >= rows || board[newY][x] === 1) {
+        if (newY >= rows || board[newY][x] !== 0) {
           return false;
         }
       }
@@ -197,13 +221,13 @@ function canMoveLeft() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
       //wenn Feld gefüllt
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const newX = block.x + col - 1;
         const y = block.y + row;
         if (newX < 0) {
           return false; //links ist Wand
         }
-        if (board[y][newX] === 1) {
+        if (board[y][newX] !== 0) {
           return false; //links ist Block
         }
       }
@@ -215,14 +239,14 @@ function canMoveLeft() {
 function canMoveRight() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         //Feld gefüllt
         const newX = block.x + col + 1;
         const y = block.y + row;
         if (newX >= cols) {
           return false; //rechts ist Wand
         }
-        if (board[y][newX] === 1) {
+        if (board[y][newX] !== 0) {
           return false; //rechts ist Block
         }
       }
@@ -323,11 +347,11 @@ function hardDrop() {
 function freezeBlock() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const x = block.x + col;
         const y = block.y + row;
 
-        board[y][x] = 1;
+        board[y][x] = block.color;
       }
     }
   }
@@ -360,7 +384,7 @@ function getRotatedShape(shape) {
 function canRotate(shape) {
   for (let row = 0; row < shape.length; row++) {
     for (let col = 0; col < shape[row].length; col++) {
-      if (shape[row][col] === 1) {
+      if (shape[row][col] !== 0) {
         //nur prüfen wenn Form dort ist
         const x = block.x + col;
         const y = block.y + row; //neue Position im Board
@@ -368,7 +392,7 @@ function canRotate(shape) {
           //außerhalb von Board
           return false;
         }
-        if (board[y][x] === 1) {
+        if (board[y][x] !== 0) {
           //Kollision mit Block
           return false;
         }
@@ -393,8 +417,8 @@ function rotateBlock() {
 function clearLines() {
   let clearedLines = 0;
   for (let row = 0; row < rows; row++) {
-    if (board[row].every((cell) => cell === 1)) {
-      //prüft ob alle Felder === 1 sind
+    if (board[row].every((cell) => cell !== 0)) {
+      //prüft ob alle Felder !== 0 sind
       board.splice(row, 1); //Reihe löschen
       board.unshift(Array(cols).fill(0)); //neue Reihe mit 0 gefüllt
       clearedLines++;
@@ -409,55 +433,4 @@ function clearLines() {
     gameSpeed -= 75;
     timerId = setInterval(moveDown, gameSpeed);
   }
-}
-
-//Hold Funktion
-let holdShape = null;
-let canHold = true;
-
-const holdGrid = document.getElementById("hold-grid");
-
-for (let i = 0; i < 16; i++) {
-  const cell = document.createElement("div");
-  cell.classList.add("cell");
-  holdGrid.appendChild(cell);
-}
-
-const holdCells = Array.from(holdGrid.children);
-
-function drawHoldShape() {
-  holdCells.forEach((cell) => {
-    cell.classList.remove("filled");
-  });
-
-  if (holdShape === null) return;
-
-  const offsetX = Math.floor((4 - holdShape[0].length) / 2);
-  const offsetY = Math.floor((4 - holdShape.length) / 2);
-
-  for (let row = 0; row < holdShape.length; row++) {
-    for (let col = 0; col < holdShape[row].length; col++) {
-      if (holdShape[row][col] === 1) {
-        const index = (row + offsetY) * 4 + (col + offsetX);
-        holdCells[index].classList.add("filled");
-      }
-    }
-  }
-}
-
-function holdBlock() {
-  if (!canHold) return;
-
-  if (holdShape === null) {
-    holdShape = block.shape;
-    createNewBlock();
-  } else {
-    const temp = block.shape;
-    createNewBlock(holdShape);
-    holdShape = temp;
-  }
-
-  canHold = false;
-  drawHoldShape();
-  drawBoard();
 }
