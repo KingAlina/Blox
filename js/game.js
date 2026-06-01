@@ -1,8 +1,3 @@
-const countdown = document.getElementById("countdown-overlay");
-const gameOverOverlay = document.getElementById("game-over-overlay");
-const finalScore = document.getElementById("final-score");
-const scoreElement = document.getElementById("score");
-
 const rows = 20;
 const cols = 10;
 const board = Array.from({ length: rows }, () => Array(cols).fill(0)); //nur logisch nicht visuell, 2D
@@ -73,7 +68,7 @@ const shapes = [
   },
 ];
 const grid = document.getElementById("grid");
-
+//200 Zellen in Gameboard erzeugen
 for (let i = 0; i < rows * cols; i++) {
   const cell = document.createElement("div");
   cell.classList.add("cell");
@@ -90,9 +85,6 @@ for (let i = 0; i < 16; i++) {
 
 const cells = Array.from(grid.children); //visuelle Darstellung mittels 1D Array
 const nextCells = Array.from(nextGrid.children);
-
-function initGame() {
-  nextShape = getRandomShape();
 
 //console.log(cells);
 function drawBoard() {
@@ -182,32 +174,8 @@ function createNewBlock(shape = nextShape) {
   };
 
   drawNextShape();
-  drawBoard();
+}
 
-  document.querySelector(".left").addEventListener("click", moveLeft);
-  document.querySelector(".right").addEventListener("click", moveRight);
-  document.querySelector(".down").addEventListener("click", moveDown);
-  document.querySelector(".up").addEventListener("click", rotateBlock);
-
-  document.getElementById("start-button").addEventListener("click", startGame);
-  document.getElementById("pause-button").addEventListener("click", pauseGame);
-  document.getElementById("reset-button").addEventListener("click", resetGame);
-
-  document.getElementById("restart-button").addEventListener("click", () => {
-    gameOverOverlay.style.display = "none";
-    resetGame();
-    startGame();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    e.preventDefault();
-
-    if (e.key === "ArrowLeft") {
-      moveLeft();
-    }
-
-    if (e.key === "ArrowRight") {
-      moveRight();
 //Spielstart, TODO: start/pause button
 nextShape = getRandomShape();
 createNewBlock();
@@ -267,6 +235,21 @@ function canMoveRight() {
         }
       }
     }
+  }
+  return true;
+}
+
+document.querySelector(".left").addEventListener("click", () => {
+  moveLeft();
+});
+
+document.querySelector(".right").addEventListener("click", () => {
+  moveRight();
+});
+
+document.querySelector(".down").addEventListener("click", () => {
+  moveDown();
+});
 
 // optional: hoch (z.B. für später Rotation)
 document.querySelector(".up").addEventListener("click", () => {
@@ -376,14 +359,11 @@ function getRotatedShape(shape) {
     for (let row = shape.length - 1; row >= 0; row--) {
       newRow.push(shape[row][col]);
     }
-
-    if (e.code === "Space") {
-      hardDrop();
-    }
-  });
+    rotatedShape.push(newRow);
+  }
+  return rotatedShape;
 }
 
-initGame();
 //Rotation ohne Kollision möglich
 function canRotate(shape) {
   for (let row = 0; row < shape.length; row++) {
