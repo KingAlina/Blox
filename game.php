@@ -10,23 +10,22 @@ include "includes/header.php";
 
   <div class="game-wrapper">
 
-    <aside class="sidebar hold-sidebar">
+    <aside class="sidebar left">
       <div class="panel hold">
         <h2>HOLD</h2>
         <div id="hold-grid"></div>
       </div>
-      <p>(Hold with shift)</p>
     </aside>
 
-    <div class="grid" id="grid">
+    <div id="grid"></div>
 
-    </div>
+    <aside class="sidebar right">
 
-    <aside class="sidebar info-sidebar">
       <div class="panel next">
         <h2>NEXT</h2>
         <div id="next-grid"></div>
       </div>
+
       <div class="panel score">
         <h2>Score</h2>
         <p id="score">0</p>
