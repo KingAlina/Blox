@@ -25,20 +25,20 @@ body {
   border: 2px solid black;
 }
 
-#next-grid {
+#next-grid, #hold-grid {
   display: grid;
   grid-template-columns: repeat(4, 30px);
   grid-template-rows: repeat(4, 30px);
   gap: 2px;
 }
 
-#next-grid .cell {
+#next-grid .cell, #hold-grid .cell {
   width: 30px;
   height: 30px;
   border: none;
 }
 
-.cell {
+.cell  {
   width: 10%;
   aspect-ratio: 1 / 1;
   border: 1px solid #ccc;
@@ -87,7 +87,7 @@ body {
 }
 
 button {
-  padding: 10px 20px;
+  padding: 10px 10px;
   font-size: 16px;
   cursor: pointer;
   border: none;
@@ -119,6 +119,7 @@ button:hover {
 
 .arrow {
   height: 50px;
+  width: 50px;
   font-size: 20px;
   border: none;
   border-radius: 8px;
@@ -130,6 +131,7 @@ button:hover {
 .arrow:hover {
   background-color: #666;
 }
+
 
 .yellow {
   background-color: yellow;
