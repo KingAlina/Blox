@@ -11,47 +11,67 @@ let block;
 let nextShape;
 
 const shapes = [
-  [
-    //Block
-    [1, 1],
-    [1, 1],
-  ],
-  [
-    //I
-    [1],
-    [1],
-    [1],
-    [1],
-  ],
-  [
-    //L
-    [1, 0],
-    [1, 0],
-    [1, 1],
-  ],
-  [
-    //J
-    [0, 1],
-    [0, 1],
-    [1, 1],
-  ],
-  [
-    //T
-    [1, 1, 1],
-    [0, 1, 0],
-  ],
-  [
-    //Z
-    [1, 1, 0],
-    [0, 1, 1],
-  ],
-  [
-    //S
-    [0, 1, 1],
-    [1, 1, 0],
-  ],
+  {
+    name: "O",
+    color: "yellow",
+    shape: [
+      [1, 1],
+      [1, 1],
+    ],
+  },
+  {
+    name: "I",
+    color: "cyan",
+    shape: [
+      [1],
+      [1],
+      [1],
+      [1],
+    ],
+  },
+  {
+    name: "L",
+    color: "orange",
+    shape: [
+      [1, 0],
+      [1, 0],
+      [1, 1],
+    ],
+  },
+  {
+    name: "J",
+    color: "blue",
+    shape: [
+      [0, 1],
+      [0, 1],
+      [1, 1],
+    ],
+  },
+  {
+    name: "T",
+    color: "purple",
+    shape: [
+      [1, 1, 1],
+      [0, 1, 0],
+    ],
+  },
+  {
+    name: "Z",
+    color: "red",
+    shape: [
+      [1, 1, 0],
+      [0, 1, 1],
+    ],
+  },
+  {
+    name: "S",
+    color: "green",
+    shape: [
+      [0, 1, 1],
+      [1, 1, 0],
+    ],
+  },
 ];
-
 const grid = document.getElementById("grid");
 //200 Zellen in Gameboard erzeugen
 for (let i = 0; i < rows * cols; i++) {
@@ -62,12 +82,11 @@ for (let i = 0; i < rows * cols; i++) {
 
 const nextGrid = document.getElementById("next-grid");
 // 16 Zellen Vorschau
-for(let i = 0; i < 16; i++){
+for (let i = 0; i < 16; i++) {
   const cell = document.createElement("div");
   cell.classList.add("cell");
   nextGrid.appendChild(cell);
 }
-
 
 const cells = Array.from(grid.children); //visuelle Darstellung mittels 1D Array
 const nextCells = Array.from(nextGrid.children);
@@ -77,42 +96,47 @@ function drawBoard() {
   //alles leeren
   cells.forEach((cell) => {
     cell.classList.remove("filled");
+    cell.className = "cell";
   });
   //feste Blöcke im Board
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
-      if (board[y][x] === 1) {
+      if (board[y][x] !== 0) {
         const index = y * cols + x;
-        cells[index].classList.add("filled");
+        cells[index].classList.add("filled", board[y][x]);
       }
     }
   }
   // aktuell fallender Block
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const x = block.x + col;
         const y = block.y + row;
         const index = y * cols + x;
-        cells[index].classList.add("filled");
+        cells[index].classList.add("filled", block.color);
       }
     }
   }
 }
 
-function drawNextShape(){
-  nextCells.forEach((cell) => 
-    {cell.classList.remove("filled");});
+function drawNextShape() {
+  nextCells.forEach((cell) => {
+    cell.className = "cell";
+  });
+
+  const shape = nextShape.shape;
+  const color = nextShape.color;
 
   //Offset, damit Block mittig platziert werden kann
-  const offsetX = Math.floor((4 - nextShape[0].length) / 2);
-  const offsetY = Math.floor((4 - nextShape.length) / 2);
+  const offsetX = Math.floor((4 - shape[0].length) / 2);
+  const offsetY = Math.floor((4 - shape.length) / 2);
 
-  for(let row = 0; row < nextShape.length; row++){
-    for(let col = 0; col < nextShape[row].length; col++){
-      if(nextShape[row][col] === 1){
+  for (let row = 0; row < shape.length; row++) {
+    for (let col = 0; col < shape[row].length; col++) {
+      if (shape[row][col] !== 0) {
         const index = (row + offsetY) * 4 + (col + offsetX);
-        nextCells[index].classList.add("filled");
+        nextCells[index].classList.add("filled", color);
       }
     }
   }
@@ -122,11 +146,11 @@ function canCreateBlock() {
   //falls kein Platz mehr liefert false
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         //prüfen ob Feld frei?
         const x = block.x + col;
         const y = block.y + row;
-        if (board[y][x] === 1) {
+        if (board[y][x] !== 0) {
           return false;
         }
       }
@@ -135,24 +159,22 @@ function canCreateBlock() {
   return true;
 }
 
-function getRandomShape(){
+function getRandomShape() {
   const randomIndex = Math.floor(Math.random() * shapes.length); //Zahl zwischen 0 und 6
-  const randomShape = shapes[randomIndex];
-  return randomShape
+  return shapes[randomIndex];
 }
 
 function createNewBlock() {
   const randomShape = nextShape;
   nextShape = getRandomShape();
   block = {
-    shape: randomShape,
-    x: Math.floor((cols - randomShape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
+    shape: randomShape.shape,
+    color: randomShape.color,
+    x: Math.floor((cols - randomShape.shape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
     y: 0,
   };
   drawNextShape();
 }
-
-
 
 //Spielstart, TODO: start/pause button
 nextShape = getRandomShape();
@@ -164,12 +186,12 @@ function canMoveDown() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
       //wenn gefüllter Teil des Blocks
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         //neue Position nach Bewegung
         const x = block.x + col;
         const newY = block.y + row + 1;
         //wenn es außerhalb des Spielfelds wäre oder schon belegt ist
-        if (newY >= rows || board[newY][x] === 1) {
+        if (newY >= rows || board[newY][x] !== 0) {
           return false;
         }
       }
@@ -178,37 +200,38 @@ function canMoveDown() {
   return true;
 }
 
-function canMoveLeft(){
+function canMoveLeft() {
   //Form durchgehen, Zeilen, Spalten
-  for (let row = 0; row < block.shape.length; row++){
-    for(let col = 0; col < block.shape[row].length; col++){
+  for (let row = 0; row < block.shape.length; row++) {
+    for (let col = 0; col < block.shape[row].length; col++) {
       //wenn Feld gefüllt
-      if(block.shape[row][col] === 1){
+      if (block.shape[row][col] !== 0) {
         const newX = block.x + col - 1;
         const y = block.y + row;
-        if(newX < 0){
-          return false //links ist Wand
+        if (newX < 0) {
+          return false; //links ist Wand
         }
-        if(board[y][newX] === 1){
-          return false //links ist Block
+        if (board[y][newX] !== 0) {
+          return false; //links ist Block
         }
       }
     }
   }
-  return true; 
+  return true;
 }
 
-function canMoveRight(){
-  for(let row = 0; row < block.shape.length; row++){
-    for(let col = 0; col < block.shape[row].length; col++){
-      if(block.shape[row][col] === 1){//Feld gefüllt
+function canMoveRight() {
+  for (let row = 0; row < block.shape.length; row++) {
+    for (let col = 0; col < block.shape[row].length; col++) {
+      if (block.shape[row][col] !== 0) {
+        //Feld gefüllt
         const newX = block.x + col + 1;
         const y = block.y + row;
-        if(newX >= cols){
-          return false //rechts ist Wand
+        if (newX >= cols) {
+          return false; //rechts ist Wand
         }
-        if(board[y][newX] === 1){
-          return false //rechts ist Block
+        if (board[y][newX] !== 0) {
+          return false; //rechts ist Block
         }
       }
     }
@@ -243,7 +266,7 @@ document.addEventListener("keydown", (e) => {
     moveRight();
   }
 
-  if (e.key === "ArrowUp"){
+  if (e.key === "ArrowUp") {
     rotateBlock();
   }
 
@@ -251,20 +274,20 @@ document.addEventListener("keydown", (e) => {
     moveDown();
   }
 
-  if(e.code === "Space"){
+  if (e.code === "Space") {
     hardDrop();
   }
 });
 
-function moveLeft(){
-  if(canMoveLeft()){
+function moveLeft() {
+  if (canMoveLeft()) {
     block.x--;
     drawBoard();
   }
 }
 
-function moveRight(){
-  if(canMoveRight()){
+function moveRight() {
+  if (canMoveRight()) {
     block.x++;
     drawBoard();
   }
@@ -285,14 +308,14 @@ function moveDown() {
   drawBoard();
 }
 
-function hardDrop(){
-  while(canMoveDown()){
+function hardDrop() {
+  while (canMoveDown()) {
     block.y++;
   }
   freezeBlock();
   clearLines();
   createNewBlock();
-  if(!canCreateBlock()){
+  if (!canCreateBlock()) {
     gameOver();
     return;
   }
@@ -302,11 +325,11 @@ function hardDrop(){
 function freezeBlock() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const x = block.x + col;
         const y = block.y + row;
 
-        board[y][x] = 1;
+        board[y][x] = block.color;
       }
     }
   }
@@ -321,13 +344,13 @@ function gameOver() {
 }
 
 //Rotation erstellen
-function getRotatedShape(shape){
+function getRotatedShape(shape) {
   const rotatedShape = [];
   //Spalten werden neue Zeilen
-  for(let col = 0; col < shape[0].length; col++){
+  for (let col = 0; col < shape[0].length; col++) {
     const newRow = [];
     //letzer Zeileneintrag in Spalte wird erster Spalteneintrag in Zeile
-    for(let row = shape.length - 1; row >= 0; row--){
+    for (let row = shape.length - 1; row >= 0; row--) {
       newRow.push(shape[row][col]);
     }
     rotatedShape.push(newRow);
@@ -336,16 +359,19 @@ function getRotatedShape(shape){
 }
 
 //Rotation ohne Kollision möglich
-function canRotate(shape){
-  for(let row = 0; row < shape.length; row++){
-    for(let col = 0; col < shape[row].length; col++){
-      if(shape[row][col] === 1){ //nur prüfen wenn Form dort ist
+function canRotate(shape) {
+  for (let row = 0; row < shape.length; row++) {
+    for (let col = 0; col < shape[row].length; col++) {
+      if (shape[row][col] !== 0) {
+        //nur prüfen wenn Form dort ist
         const x = block.x + col;
-        const y = block.y + row;  //neue Position im Board
-        if(x < 0 || x >= cols || y >= rows){ //außerhalb von Board
-          return false 
+        const y = block.y + row; //neue Position im Board
+        if (x < 0 || x >= cols || y >= rows) {
+          //außerhalb von Board
+          return false;
         }
-        if(board[y][x] === 1){ //Kollision mit Block
+        if (board[y][x] !== 0) {
+          //Kollision mit Block
           return false;
         }
       }
@@ -355,10 +381,10 @@ function canRotate(shape){
 }
 
 //Block wird rotiert
-function rotateBlock(){
+function rotateBlock() {
   const rotatedShape = getRotatedShape(block.shape);
 
-  if(canRotate(rotatedShape)){
+  if (canRotate(rotatedShape)) {
     block.shape = rotatedShape;
     drawBoard();
   }
@@ -366,19 +392,21 @@ function rotateBlock(){
 
 //Punktesystem: 1 Reihe = 100 Punkte, 2 Reihen = 300 Punkte, 3 Reihen = 500 Punkte, 4 Reihen = 800 Punkte
 
-function clearLines(){
+function clearLines() {
   let clearedLines = 0;
-  for(let row = 0; row < rows; row++){
-    if(board[row].every(cell => cell === 1)){ //prüft ob alle Felder === 1 sind
+  for (let row = 0; row < rows; row++) {
+    if (board[row].every((cell) => cell !== 0)) {
+      //prüft ob alle Felder !== 0 sind
       board.splice(row, 1); //Reihe löschen
       board.unshift(Array(cols).fill(0)); //neue Reihe mit 0 gefüllt
       clearedLines++;
     }
   }
-  score += points[clearedLines];  //clearedLines werden Array Index
+  score += points[clearedLines]; //clearedLines werden Array Index
   document.getElementById("score").textContent = score; //anzeigen
   totalLinesCleared += clearedLines;
-  if(totalLinesCleared % 5 === 0 && totalLinesCleared > 0 && gameSpeed > 175){//alle 5 gelöschten Reihen Level Up
+  if (totalLinesCleared % 5 === 0 && totalLinesCleared > 0 && gameSpeed > 175) {
+    //alle 5 gelöschten Reihen Level Up
     clearInterval(timerId);
     gameSpeed -= 75;
     timerId = setInterval(moveDown, gameSpeed);
