@@ -3,7 +3,9 @@ $pageTitle = "Blox Game";
 include "includes/header.php";
 ?>
 
-<div class="game-container">
+
+
+<div class="container">
   <h1 class="title">BLOX</h1>
 
   <div class="game-wrapper">
