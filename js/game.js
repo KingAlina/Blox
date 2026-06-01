@@ -22,12 +22,7 @@ const shapes = [
   {
     name: "I",
     color: "cyan",
-    shape: [
-      [1],
-      [1],
-      [1],
-      [1],
-    ],
+    shape: [[1], [1], [1], [1]],
   },
   {
     name: "L",
@@ -164,17 +159,6 @@ function getRandomShape() {
   return shapes[randomIndex];
 }
 
-// function createNewBlock() {
-//   const randomShape = nextShape;
-//   nextShape = getRandomShape();
-//   block = {
-//     shape: randomShape,
-//     x: Math.floor((cols - randomShape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
-//     y: 0,
-//   };
-//   drawNextShape();
-// }
-
 function createNewBlock(shape = nextShape) {
   const newShape = shape;
 
@@ -183,9 +167,9 @@ function createNewBlock(shape = nextShape) {
   }
 
   block = {
-    shape: randomShape.shape,
-    color: randomShape.color,
-    x: Math.floor((cols - randomShape.shape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
+    shape: newShape.shape,
+    color: newShape.color,
+    x: Math.floor((cols - newShape.shape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
     y: 0,
   };
 
@@ -433,4 +417,63 @@ function clearLines() {
     gameSpeed -= 75;
     timerId = setInterval(moveDown, gameSpeed);
   }
+}
+
+// Hold Funktion
+let holdShape = null;
+let canHold = true;
+
+const holdGrid = document.getElementById("hold-grid");
+
+for (let i = 0; i < 16; i++) {
+  const cell = document.createElement("div");
+  cell.classList.add("cell");
+  holdGrid.appendChild(cell);
+}
+
+const holdCells = Array.from(holdGrid.children);
+
+function drawHoldShape() {
+  holdCells.forEach((cell) => {
+    cell.className = "cell";
+  });
+
+  if (holdShape === null) return;
+
+  const shape = holdShape.shape;
+  const color = holdShape.color;
+
+  const offsetX = Math.floor((4 - shape[0].length) / 2);
+  const offsetY = Math.floor((4 - shape.length) / 2);
+
+  for (let row = 0; row < shape.length; row++) {
+    for (let col = 0; col < shape[row].length; col++) {
+      if (shape[row][col] !== 0) {
+        const index = (row + offsetY) * 4 + (col + offsetX);
+        holdCells[index].classList.add("filled", color);
+      }
+    }
+  }
+}
+
+function holdBlock() {
+  if (!canHold) return;
+
+  const currentBlock = {
+    shape: block.shape,
+    color: block.color,
+  };
+
+  if (holdShape === null) {
+    holdShape = currentBlock;
+    createNewBlock();
+  } else {
+    const temp = holdShape;
+    holdShape = currentBlock;
+    createNewBlock(temp);
+  }
+
+  canHold = false;
+  drawHoldShape();
+  drawBoard();
 }
