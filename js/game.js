@@ -164,15 +164,31 @@ function getRandomShape() {
   return shapes[randomIndex];
 }
 
-function createNewBlock() {
-  const randomShape = nextShape;
-  nextShape = getRandomShape();
+// function createNewBlock() {
+//   const randomShape = nextShape;
+//   nextShape = getRandomShape();
+//   block = {
+//     shape: randomShape,
+//     x: Math.floor((cols - randomShape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
+//     y: 0,
+//   };
+//   drawNextShape();
+// }
+
+function createNewBlock(shape = nextShape) {
+  const newShape = shape;
+
+  if (shape === nextShape) {
+    nextShape = getRandomShape();
+  }
+
   block = {
     shape: randomShape.shape,
     color: randomShape.color,
     x: Math.floor((cols - randomShape.shape[0].length) / 2), //platziert den Stein mittig im Verhältnis zu seiner Breite
     y: 0,
   };
+
   drawNextShape();
 }
 
@@ -277,6 +293,10 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
     hardDrop();
   }
+
+  if (e.key === "Shift") {
+    holdBlock();
+  }
 });
 
 function moveLeft() {
@@ -298,6 +318,7 @@ function moveDown() {
     block.y++;
   } else {
     freezeBlock();
+    canHold = true;
     clearLines();
     createNewBlock();
     if (!canCreateBlock()) {
@@ -313,6 +334,7 @@ function hardDrop() {
     block.y++;
   }
   freezeBlock();
+  canHold = true;
   clearLines();
   createNewBlock();
   if (!canCreateBlock()) {
