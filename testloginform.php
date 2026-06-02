@@ -8,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
       {
         $BenutzernameErr = "Dies ist ein Pflichtfeld";
       } 
-
     if (empty($_POST["Passwort"])) 
       {
         $PasswortErr = "Dies ist ein Pflichtfeld";
@@ -45,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     $stmt->close();
     $db_obj->close();
     
-}    
+    }    
   }  
 ?>
 
