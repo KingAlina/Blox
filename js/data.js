@@ -16,44 +16,63 @@ let countdownTimeouts = [];
 let block = null;
 let nextShape;
 
+let holdShape = null;
+let canHold = true;
+
 const shapes = [
-  [
-    //Block
-    [1, 1],
-    [1, 1],
-  ],
-  [
-    //I
-    [1],
-    [1],
-    [1],
-    [1],
-  ],
-  [
-    //L
-    [1, 0],
-    [1, 0],
-    [1, 1],
-  ],
-  [
-    //J
-    [0, 1],
-    [0, 1],
-    [1, 1],
-  ],
-  [
-    //T
-    [1, 1, 1],
-    [0, 1, 0],
-  ],
-  [
-    //Z
-    [1, 1, 0],
-    [0, 1, 1],
-  ],
-  [
-    //S
-    [0, 1, 1],
-    [1, 1, 0],
-  ],
+  {
+    name: "O",
+    color: "yellow",
+    shape: [
+      [1, 1],
+      [1, 1],
+    ],
+  },
+  {
+    name: "I",
+    color: "cyan",
+    shape: [[1], [1], [1], [1]],
+  },
+  {
+    name: "L",
+    color: "orange",
+    shape: [
+      [1, 0],
+      [1, 0],
+      [1, 1],
+    ],
+  },
+  {
+    name: "J",
+    color: "blue",
+    shape: [
+      [0, 1],
+      [0, 1],
+      [1, 1],
+    ],
+  },
+  {
+    name: "T",
+    color: "purple",
+    shape: [
+      [1, 1, 1],
+      [0, 1, 0],
+    ],
+  },
+  {
+    name: "Z",
+    color: "red",
+    shape: [
+      [1, 1, 0],
+      [0, 1, 1],
+    ],
+  },
+  {
+    name: "S",
+    color: "green",
+    shape: [
+      [0, 1, 1],
+      [1, 1, 0],
+    ],
+  },
 ];

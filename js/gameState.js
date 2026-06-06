@@ -42,6 +42,8 @@ function resetGame() {
   isPaused = false;
   isCountdownRunning = false;
   block = null;
+  holdShape = null;
+  canHold = true;
 
   countdown.style.display = "none";
   gameOverOverlay.style.display = "none";
@@ -49,6 +51,12 @@ function resetGame() {
   for (let row = 0; row < rows; row++) {
     board[row].fill(0);
   }
+
+  cells.forEach((cell) => {
+    cell.className = "cell";
+    cell.style.backgroundColor = "";
+    cell.style.animation = "";
+  });
 
   score = 0;
   totalLinesCleared = 0;
@@ -58,7 +66,7 @@ function resetGame() {
 
   nextShape = getRandomShape();
   drawNextShape();
-  drawBoard();
+  drawHoldShape();
 }
 
 function showCountdown() {
