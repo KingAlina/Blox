@@ -3,13 +3,17 @@ function getRandomShape() {
   return shapes[randomIndex];
 }
 
-function createNewBlock() {
-  const randomShape = nextShape;
-  nextShape = getRandomShape();
+function createNewBlock(shape = nextShape) {
+  const newShape = shape;
+
+  if (shape === nextShape) {
+    nextShape = getRandomShape();
+  }
 
   block = {
-    shape: randomShape,
-    x: Math.floor((cols - randomShape[0].length) / 2),
+    shape: newShape.shape,
+    color: newShape.color,
+    x: Math.floor((cols - newShape.shape[0].length) / 2),
     y: 0,
   };
 
@@ -19,11 +23,11 @@ function createNewBlock() {
 function canCreateBlock() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const x = block.x + col;
         const y = block.y + row;
 
-        if (board[y][x] === 1) {
+        if (board[y][x] !== 0) {
           return false;
         }
       }
@@ -31,16 +35,16 @@ function canCreateBlock() {
   }
 
   return true;
-}
+} 
 
 function canMoveDown() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const x = block.x + col;
         const newY = block.y + row + 1;
 
-        if (newY >= rows || board[newY][x] === 1) {
+        if (newY >= rows || board[newY][x] !== 0) {
           return false;
         }
       }
@@ -58,11 +62,11 @@ function getGhostY() {
 
     for (let row = 0; row < block.shape.length; row++) {
       for (let col = 0; col < block.shape[row].length; col++) {
-        if (block.shape[row][col] === 1) {
+        if (block.shape[row][col] !== 0) {
           const x = block.x + col;
           const newY = ghostY + row + 1;
 
-          if (newY >= rows || board[newY][x] === 1) {
+          if (newY >= rows || board[newY][x] !== 0) {
             canMove = false;
           }
         }
@@ -82,11 +86,11 @@ function getGhostY() {
 function canMoveLeft() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const newX = block.x + col - 1;
         const y = block.y + row;
 
-        if (newX < 0 || board[y][newX] === 1) {
+        if (newX < 0 || board[y][newX] !== 0) {
           return false;
         }
       }
@@ -99,11 +103,11 @@ function canMoveLeft() {
 function canMoveRight() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const newX = block.x + col + 1;
         const y = block.y + row;
 
-        if (newX >= cols || board[y][newX] === 1) {
+        if (newX >= cols || board[y][newX] !== 0) {
           return false;
         }
       }
@@ -143,6 +147,7 @@ function moveDown() {
     drawBoard();
   } else {
     freezeBlock();
+    canHold = true;
     const linesWereCleared = clearLines();
     createNewBlock();
 
@@ -166,6 +171,7 @@ function hardDrop() {
   }
 
   freezeBlock();
+  canHold = true;
   clearLines();
   createNewBlock();
 
@@ -180,11 +186,11 @@ function hardDrop() {
 function freezeBlock() {
   for (let row = 0; row < block.shape.length; row++) {
     for (let col = 0; col < block.shape[row].length; col++) {
-      if (block.shape[row][col] === 1) {
+      if (block.shape[row][col] !== 0) {
         const x = block.x + col;
         const y = block.y + row;
 
-        board[y][x] = 1;
+        board[y][x] = block.color;
       }
     }
   }
@@ -209,7 +215,7 @@ function getRotatedShape(shape) {
 function canRotate(shape) {
   for (let row = 0; row < shape.length; row++) {
     for (let col = 0; col < shape[row].length; col++) {
-      if (shape[row][col] === 1) {
+      if (shape[row][col] !== 0) {
         const x = block.x + col;
         const y = block.y + row;
 
@@ -217,7 +223,7 @@ function canRotate(shape) {
           return false;
         }
 
-        if (board[y][x] === 1) {
+        if (board[y][x] !== 0) {
           return false;
         }
       }
@@ -254,7 +260,7 @@ function clearLines() {
   const fullRows = [];
 
   for (let row = 0; row < rows; row++) {
-    if (board[row].every((cell) => cell === 1)) {
+    if(board[row].every(cell => cell !== 0)) {
       fullRows.push(row);
     }
   }
@@ -296,4 +302,26 @@ function clearLines() {
     drawBoard();
   }, 200);
   return true;
+}
+
+function holdBlock() {
+  if (!canHold) return;
+
+  const currentBlock = {
+    shape: block.shape,
+    color: block.color,
+  };
+
+  if (holdShape === null) {
+    holdShape = currentBlock;
+    createNewBlock();
+  } else {
+    const temp = holdShape;
+    holdShape = currentBlock;
+    createNewBlock(temp);
+  }
+
+  canHold = false;
+  drawHoldShape();
+  drawBoard();
 }

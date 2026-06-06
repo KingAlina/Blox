@@ -22,10 +22,20 @@ for (let i = 0; i < 16; i++) {
 const cells = Array.from(grid.children);
 const nextCells = Array.from(nextGrid.children);
 
+const holdGrid = document.getElementById("hold-grid");
+
+for (let i = 0; i < 16; i++) {
+  const cell = document.createElement("div");
+  cell.classList.add("cell");
+  holdGrid.appendChild(cell);
+}
+
+const holdCells = Array.from(holdGrid.children);
+
+
 function initGame() {
   nextShape = getRandomShape();
   drawNextShape();
-  drawBoard();
 
   document.querySelector(".left").addEventListener("click", moveLeft);
   document.querySelector(".right").addEventListener("click", moveRight);
@@ -63,6 +73,10 @@ function initGame() {
 
     if (e.code === "Space") {
       hardDrop();
+    }
+
+    if (e.key === "Shift") {
+      holdBlock();
     }
   });
 }
