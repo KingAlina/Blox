@@ -55,6 +55,12 @@ include "includes/header.php";
   </div>
 </div>
 
+<audio id="bgm" loop>
+  <source src="audio/bgm1.mp3" type="audio/mpeg">
+  <!-- <source src="audio/bgm2.mp3" type="audio/mpeg"> -->
+  <!-- <source src="audio/bgm3.mp3" type="audio/mpeg"> -->
+</audio>
+
 <!--js Files müssen in dieser Reihenfolge geladen werden -->
 <script src="/Blox/js/data.js?v=<?php echo time(); ?>"></script>
 <script src="/Blox/js/render.js?v=<?php echo time(); ?>"></script>

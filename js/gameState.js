@@ -6,6 +6,7 @@ function startGame() {
   if (isPaused) {
     isPaused = false;
     clearInterval(timerId);
+    isGameRunning = true;
     showCountdown();
     return;
   }
@@ -31,6 +32,7 @@ function pauseGame() {
   clearInterval(timerId);
   timerId = null;
   isPaused = true;
+  bgm.pause();
 }
 
 function resetGame() {
@@ -67,6 +69,9 @@ function resetGame() {
   nextShape = getRandomShape();
   drawNextShape();
   drawHoldShape();
+
+  bgm.pause();
+  bgm.currentTime = 0;
 }
 
 function showCountdown() {
@@ -76,23 +81,32 @@ function showCountdown() {
   countdown.style.display = "flex";
   countdown.textContent = "3";
 
-  countdownTimeouts.push(setTimeout(() => {
-    countdown.textContent = "2";
-  }, 1000));
+  countdownTimeouts.push(
+    setTimeout(() => {
+      countdown.textContent = "2";
+    }, 1000),
+  );
 
-  countdownTimeouts.push(setTimeout(() => {
-    countdown.textContent = "1";
-  }, 2000));
+  countdownTimeouts.push(
+    setTimeout(() => {
+      countdown.textContent = "1";
+    }, 2000),
+  );
 
-  countdownTimeouts.push(setTimeout(() => {
-    countdown.textContent = "GO";
-  }, 3000));
+  countdownTimeouts.push(
+    setTimeout(() => {
+      countdown.textContent = "GO";
+    }, 3000),
+  );
 
-  countdownTimeouts.push(setTimeout(() => {
-    countdown.style.display = "none";
-    isCountdownRunning = false;
-    timerId = setInterval(moveDown, gameSpeed);
-  }, 4000));
+  countdownTimeouts.push(
+    setTimeout(() => {
+      countdown.style.display = "none";
+      isCountdownRunning = false;
+      bgm.play();
+      timerId = setInterval(moveDown, gameSpeed);
+    }, 4000),
+  );
 }
 
 function clearCountdownTimers() {
@@ -115,6 +129,7 @@ function gameOver() {
   gameOverOverlay.style.display = "flex";
 
   saveScore(score);
+  bgm.pause();
 }
 
 async function saveScore(score) {

@@ -2,6 +2,7 @@ const countdown = document.getElementById("countdown-overlay");
 const gameOverOverlay = document.getElementById("game-over-overlay");
 const finalScore = document.getElementById("final-score");
 const scoreElement = document.getElementById("score");
+const bgm = document.getElementById("bgm");
 
 const grid = document.getElementById("grid");
 
