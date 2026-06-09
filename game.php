@@ -21,9 +21,19 @@ include "includes/header.php";
         <h2>HOLD</h2>
         <div id="hold-grid"></div>
       </div>
+      <div class="key-panel hold-button">
+        <span class="key-label">SHIFT</span>
+        <span>HOLD PIECE</span>
+      </div>
     </aside>
 
-    <div class="grid" id="grid">
+    <div class="center-area">
+      <div class="grid" id="grid"></div>
+
+      <div class="key-panel hard-drop-button">
+        <span class="key-label">SPACE</span>
+        <span>HARD DROP</span>
+      </div>
     </div>
 
     <aside class="sidebar info-sidebar">
