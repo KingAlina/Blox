@@ -1,6 +1,6 @@
 <?php
 $host = "localhost";
-$user = "Michael";
-$password = "Blox";
-$database = "blox";
-?> 
+$user = "alina";
+$password = "Pakistan,1";
+$database = "Blox";
+?>
