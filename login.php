@@ -1,5 +1,5 @@
 <?php
-session_start();
+include "includes/header.php";
 
  $loginMsg = $Benutzername = $BenutzernameErr = $PasswortErr = $id = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST")
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 <div class="container">
   <div class="row">
     <div class="col">
-    <h1>Login</h1>
+    <h1 class="title">Login</h1>
     <form method="post" action=""> 
 
         <div class="form-floating mb-3">              

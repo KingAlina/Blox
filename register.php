@@ -1,4 +1,6 @@
 <?php
+include "includes/header.php";
+
 $VornameErr = $NachnameErr = $EmailErr = $BenutzernameErr = $PasswortErr = $PasswortagainErr = "";
 $Vorname = $Nachname = $Email = $Passwort = $Benutzername = $Passwortagain = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST")
@@ -118,7 +120,7 @@ header("Location: login.php");
 <div class="container">
   <div class="row">
     <div class="col">
-    <h1>Registrierung</h1>
+    <h1 class="title">Registrierung</h1>
     <form method="post" action="">         
 
         <div class="form-floating mb-3">              
