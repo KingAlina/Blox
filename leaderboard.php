@@ -1,4 +1,5 @@
 <?php
+include "includes/header.php";
 require_once('dbaccess.php');
 
 $db_obj = new mysqli($host, $user, $password, $database);
@@ -25,7 +26,7 @@ $stmt->bind_result($Punktezahl, $Player, $Datum);
 </head>
 <body>
     <div class="container mt-5">
-    <h1> Highscores</h1>
+    <h1 class="title"> Highscores</h1>
 
     <table class="table table-striped mt-4">
         <thead class="table-dark">
