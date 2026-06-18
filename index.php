@@ -18,9 +18,9 @@ include "includes/header.php";
         <button type="button">Spiel starten</button>
       </a>
 
-      <a href="register.php">
+      <!-- <a href="register.php">
         <button type="button">Registrieren</button>
-      </a>
+      </a> -->
     </div>
   </div>
 
