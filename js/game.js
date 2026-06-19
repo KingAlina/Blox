@@ -43,6 +43,9 @@ function initGame() {
   document.querySelector(".down").addEventListener("click", moveDown);
   document.querySelector(".up").addEventListener("click", rotateBlock);
 
+  document.querySelector(".hold-button").addEventListener("click", holdBlock);
+  document.querySelector(".hard-drop-button").addEventListener("click", hardDrop);
+
   document.getElementById("start-button").addEventListener("click", startGame);
   document.getElementById("pause-button").addEventListener("click", pauseGame);
   document.getElementById("reset-button").addEventListener("click", resetGame);
