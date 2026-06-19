@@ -2,6 +2,7 @@ const countdown = document.getElementById("countdown-overlay");
 const gameOverOverlay = document.getElementById("game-over-overlay");
 const finalScore = document.getElementById("final-score");
 const scoreElement = document.getElementById("score");
+const bgm = document.getElementById("bgm");
 
 const grid = document.getElementById("grid");
 
@@ -41,6 +42,9 @@ function initGame() {
   document.querySelector(".right").addEventListener("click", moveRight);
   document.querySelector(".down").addEventListener("click", moveDown);
   document.querySelector(".up").addEventListener("click", rotateBlock);
+
+  document.querySelector(".hold-button").addEventListener("click", holdBlock);
+  document.querySelector(".hard-drop-button").addEventListener("click", hardDrop);
 
   document.getElementById("start-button").addEventListener("click", startGame);
   document.getElementById("pause-button").addEventListener("click", pauseGame);

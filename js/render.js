@@ -41,6 +41,7 @@ function drawBoard() {
         const x = block.x + col;
         const y = block.y + row;
         const index = y * cols + x;
+        cells[index].classList.remove("ghost");
         cells[index].classList.add("filled", block.color);
       }
     }

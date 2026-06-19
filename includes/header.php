@@ -26,10 +26,18 @@ if (!isset($pageTitle)) {
 
         <div class="navbar-nav">
             <a class="nav-link" href="index.php">Home</a>
-            <a class="nav-link" href="game.php">Game</a>
-            <a class="nav-link" href="leaderboard.php">Leaderboard</a>
-            <a class="nav-link" href="login.php">Login</a>
-            <a class="nav-link" href="register.php">Register</a>
+            <a class="nav-link" href="game.php">Game</a>    
+            
+            <?php if(isset($_SESSION["Benutzername"])){
+                        echo '<a class="nav-link" href="leaderboard.php">Leaderboard</a>';
+                        echo '<a class="nav-link" href="logout.php">logout</a>';                   
+                    }
+                    else
+                    {
+                        echo '<a class="nav-link" href="login.php">Login</a>';
+                        echo '<a class="nav-link" href="register.php">Register</a>';
+                    }
+            ?>
         </div>
     </div>
 </nav>

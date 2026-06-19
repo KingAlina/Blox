@@ -1,7 +1,7 @@
 <?php
-session_start();
+include "includes/header.php";
 
- $loginMsg = $Benutzername = $BenutzernameErr = $PasswortErr = "";
+ $loginMsg = $Benutzername = $BenutzernameErr = $PasswortErr = $id = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST")
   {   
     if (empty($_POST["Benutzername"])) 
@@ -23,17 +23,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     echo "Connection Error: " . $db_obj->connect_error;
     exit();
     }
-    $sql = "SELECT Passwort FROM player WHERE Benutzername = ?";
+    $sql = "SELECT id, Passwort FROM player WHERE Benutzername = ?";
     $stmt = $db_obj->prepare($sql);
     $stmt->bind_param("s", $Benutzername);
     $stmt->execute();
     
-    $stmt->bind_result($Passwort);
+    $stmt->bind_result($id, $Passwort);
 
     if ($stmt->fetch()) {
         if(password_verify($_POST["Passwort"], $Passwort)) {
         $loginMsg = "Valid password!<br>";
-        $_SESSION["Benutzername"] = $_POST["Benutzername"];
+        $_SESSION["Benutzername"] = $Benutzername;
+        $_SESSION["playerid"] = $id;
+        header("Location: game.php");
         } else {
             $loginMsg =  "Invalid password!<br>";
         }
@@ -66,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 <div class="container">
   <div class="row">
     <div class="col">
-    <h1>Login</h1>
+    <h1 class="title">Login</h1>
     <form method="post" action=""> 
 
         <div class="form-floating mb-3">              
@@ -81,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             <span class="error">* <?php echo $PasswortErr;?></span>
         </div>              
         <button type="submit">Login</button>
-        <p><?php echo $loginMsg; ?></p>
+        <p class="error"><?php echo $loginMsg; ?></p>
         </form>
         </div>
       </div>

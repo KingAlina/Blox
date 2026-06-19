@@ -1,4 +1,6 @@
 <?php
+include "includes/header.php";
+
 $VornameErr = $NachnameErr = $EmailErr = $BenutzernameErr = $PasswortErr = $PasswortagainErr = "";
 $Vorname = $Nachname = $Email = $Passwort = $Benutzername = $Passwortagain = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST")
@@ -98,6 +100,7 @@ $stmt-> bind_param("sssss", $Benutzername, $Vorname, $Nachname, $Email, $Passwor
 
 if ($stmt->execute()) { echo "Account wurde erfolgreich angelegt"; } else { echo "Registrierung fehlgeschlagen"; }
 $stmt->close(); $db_obj->close();
+header("Location: login.php");
 }
 ?>
 <!DOCTYPE html>
@@ -117,7 +120,7 @@ $stmt->close(); $db_obj->close();
 <div class="container">
   <div class="row">
     <div class="col">
-    <h1>Registrierung</h1>
+    <h1 class="title">Registrierung</h1>
     <form method="post" action="">         
 
         <div class="form-floating mb-3">              
